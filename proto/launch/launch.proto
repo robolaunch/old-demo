@@ -2,14 +2,56 @@ syntax="proto3";
 package launch;
 option go_package="launch/api/launchpb";
 
+// Create & Delete Keycloak users
 
-message UserRequest {
-    string name=1;
+message User {
+    string username = 1;
+    string password = 2;
+    string email = 3;
+    string organization = 4;
 }
+
+message UserCreateRequest {
+    User user = 1;
+}
+
+message UserDeleteRequest {
+    string username = 1;
+}
+
 message UserResponse {
-    string name=1;
+    bool is_ok = 1;
+    User user = 2;
 }
 
-service User{
-    rpc Create(UserRequest) returns (UserResponse);
+// Manage lifecycle of robot launches
+
+message Launch {
+    string username = 1;
+    string name = 2;
+    string robot_type = 3;
+    string namespace = 4;
 }
+
+message LaunchCreateRequest {
+    Launch launch = 1;
+}
+
+message LaunchDeleteRequest {
+    string username = 1;
+    string name = 2;
+    string namespace = 3;
+}
+
+message LaunchResponse {
+    bool is_ok = 1;
+    Launch launch = 2;
+}
+
+service LaunchService{
+    rpc CreateUser(UserCreateRequest) returns (UserResponse);
+    rpc DeleteUser(UserDeleteRequest) returns (UserResponse);
+    rpc CreateLaunch(LaunchCreateRequest) returns (LaunchResponse);
+    rpc DeleteLaunch(LaunchDeleteRequest) returns (LaunchResponse);
+}
+

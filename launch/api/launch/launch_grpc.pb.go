@@ -14,86 +14,194 @@ import (
 // Requires gRPC-Go v1.32.0 or later.
 const _ = grpc.SupportPackageIsVersion7
 
-// UserClient is the client API for User service.
+// LaunchServiceClient is the client API for LaunchService service.
 //
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://pkg.go.dev/google.golang.org/grpc/?tab=doc#ClientConn.NewStream.
-type UserClient interface {
-	Create(ctx context.Context, in *UserRequest, opts ...grpc.CallOption) (*UserResponse, error)
+type LaunchServiceClient interface {
+	CreateUser(ctx context.Context, in *UserCreateRequest, opts ...grpc.CallOption) (*UserResponse, error)
+	DeleteUser(ctx context.Context, in *UserDeleteRequest, opts ...grpc.CallOption) (*UserResponse, error)
+	CreateLaunch(ctx context.Context, in *LaunchCreateRequest, opts ...grpc.CallOption) (*LaunchResponse, error)
+	DeleteLaunch(ctx context.Context, in *LaunchDeleteRequest, opts ...grpc.CallOption) (*LaunchResponse, error)
 }
 
-type userClient struct {
+type launchServiceClient struct {
 	cc grpc.ClientConnInterface
 }
 
-func NewUserClient(cc grpc.ClientConnInterface) UserClient {
-	return &userClient{cc}
+func NewLaunchServiceClient(cc grpc.ClientConnInterface) LaunchServiceClient {
+	return &launchServiceClient{cc}
 }
 
-func (c *userClient) Create(ctx context.Context, in *UserRequest, opts ...grpc.CallOption) (*UserResponse, error) {
+func (c *launchServiceClient) CreateUser(ctx context.Context, in *UserCreateRequest, opts ...grpc.CallOption) (*UserResponse, error) {
 	out := new(UserResponse)
-	err := c.cc.Invoke(ctx, "/launch.User/Create", in, out, opts...)
+	err := c.cc.Invoke(ctx, "/launch.LaunchService/CreateUser", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
 	return out, nil
 }
 
-// UserServer is the server API for User service.
-// All implementations must embed UnimplementedUserServer
+func (c *launchServiceClient) DeleteUser(ctx context.Context, in *UserDeleteRequest, opts ...grpc.CallOption) (*UserResponse, error) {
+	out := new(UserResponse)
+	err := c.cc.Invoke(ctx, "/launch.LaunchService/DeleteUser", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *launchServiceClient) CreateLaunch(ctx context.Context, in *LaunchCreateRequest, opts ...grpc.CallOption) (*LaunchResponse, error) {
+	out := new(LaunchResponse)
+	err := c.cc.Invoke(ctx, "/launch.LaunchService/CreateLaunch", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *launchServiceClient) DeleteLaunch(ctx context.Context, in *LaunchDeleteRequest, opts ...grpc.CallOption) (*LaunchResponse, error) {
+	out := new(LaunchResponse)
+	err := c.cc.Invoke(ctx, "/launch.LaunchService/DeleteLaunch", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+// LaunchServiceServer is the server API for LaunchService service.
+// All implementations must embed UnimplementedLaunchServiceServer
 // for forward compatibility
-type UserServer interface {
-	Create(context.Context, *UserRequest) (*UserResponse, error)
-	mustEmbedUnimplementedUserServer()
+type LaunchServiceServer interface {
+	CreateUser(context.Context, *UserCreateRequest) (*UserResponse, error)
+	DeleteUser(context.Context, *UserDeleteRequest) (*UserResponse, error)
+	CreateLaunch(context.Context, *LaunchCreateRequest) (*LaunchResponse, error)
+	DeleteLaunch(context.Context, *LaunchDeleteRequest) (*LaunchResponse, error)
+	mustEmbedUnimplementedLaunchServiceServer()
 }
 
-// UnimplementedUserServer must be embedded to have forward compatible implementations.
-type UnimplementedUserServer struct {
+// UnimplementedLaunchServiceServer must be embedded to have forward compatible implementations.
+type UnimplementedLaunchServiceServer struct {
 }
 
-func (UnimplementedUserServer) Create(context.Context, *UserRequest) (*UserResponse, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method Create not implemented")
+func (UnimplementedLaunchServiceServer) CreateUser(context.Context, *UserCreateRequest) (*UserResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method CreateUser not implemented")
 }
-func (UnimplementedUserServer) mustEmbedUnimplementedUserServer() {}
+func (UnimplementedLaunchServiceServer) DeleteUser(context.Context, *UserDeleteRequest) (*UserResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method DeleteUser not implemented")
+}
+func (UnimplementedLaunchServiceServer) CreateLaunch(context.Context, *LaunchCreateRequest) (*LaunchResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method CreateLaunch not implemented")
+}
+func (UnimplementedLaunchServiceServer) DeleteLaunch(context.Context, *LaunchDeleteRequest) (*LaunchResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method DeleteLaunch not implemented")
+}
+func (UnimplementedLaunchServiceServer) mustEmbedUnimplementedLaunchServiceServer() {}
 
-// UnsafeUserServer may be embedded to opt out of forward compatibility for this service.
-// Use of this interface is not recommended, as added methods to UserServer will
+// UnsafeLaunchServiceServer may be embedded to opt out of forward compatibility for this service.
+// Use of this interface is not recommended, as added methods to LaunchServiceServer will
 // result in compilation errors.
-type UnsafeUserServer interface {
-	mustEmbedUnimplementedUserServer()
+type UnsafeLaunchServiceServer interface {
+	mustEmbedUnimplementedLaunchServiceServer()
 }
 
-func RegisterUserServer(s grpc.ServiceRegistrar, srv UserServer) {
-	s.RegisterService(&User_ServiceDesc, srv)
+func RegisterLaunchServiceServer(s grpc.ServiceRegistrar, srv LaunchServiceServer) {
+	s.RegisterService(&LaunchService_ServiceDesc, srv)
 }
 
-func _User_Create_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(UserRequest)
+func _LaunchService_CreateUser_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(UserCreateRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
 	if interceptor == nil {
-		return srv.(UserServer).Create(ctx, in)
+		return srv.(LaunchServiceServer).CreateUser(ctx, in)
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: "/launch.User/Create",
+		FullMethod: "/launch.LaunchService/CreateUser",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(UserServer).Create(ctx, req.(*UserRequest))
+		return srv.(LaunchServiceServer).CreateUser(ctx, req.(*UserCreateRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
 
-// User_ServiceDesc is the grpc.ServiceDesc for User service.
+func _LaunchService_DeleteUser_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(UserDeleteRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(LaunchServiceServer).DeleteUser(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/launch.LaunchService/DeleteUser",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(LaunchServiceServer).DeleteUser(ctx, req.(*UserDeleteRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _LaunchService_CreateLaunch_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(LaunchCreateRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(LaunchServiceServer).CreateLaunch(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/launch.LaunchService/CreateLaunch",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(LaunchServiceServer).CreateLaunch(ctx, req.(*LaunchCreateRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _LaunchService_DeleteLaunch_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(LaunchDeleteRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(LaunchServiceServer).DeleteLaunch(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/launch.LaunchService/DeleteLaunch",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(LaunchServiceServer).DeleteLaunch(ctx, req.(*LaunchDeleteRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+// LaunchService_ServiceDesc is the grpc.ServiceDesc for LaunchService service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
-var User_ServiceDesc = grpc.ServiceDesc{
-	ServiceName: "launch.User",
-	HandlerType: (*UserServer)(nil),
+var LaunchService_ServiceDesc = grpc.ServiceDesc{
+	ServiceName: "launch.LaunchService",
+	HandlerType: (*LaunchServiceServer)(nil),
 	Methods: []grpc.MethodDesc{
 		{
-			MethodName: "Create",
-			Handler:    _User_Create_Handler,
+			MethodName: "CreateUser",
+			Handler:    _LaunchService_CreateUser_Handler,
+		},
+		{
+			MethodName: "DeleteUser",
+			Handler:    _LaunchService_DeleteUser_Handler,
+		},
+		{
+			MethodName: "CreateLaunch",
+			Handler:    _LaunchService_CreateLaunch_Handler,
+		},
+		{
+			MethodName: "DeleteLaunch",
+			Handler:    _LaunchService_DeleteLaunch_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},

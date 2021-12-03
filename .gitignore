@@ -15,3 +15,5 @@
 # vendor/
 
 launch/config.yaml
+launch/test-client
+feedback/test-client
