@@ -1,0 +1,15 @@
+syntax="proto3";
+package feedback;
+option go_package="feedbackpb/api/feedbackpb";
+
+
+message UserRequest {
+    string name=1;
+}
+message UserResponse {
+    string name=1;
+}
+
+service User{
+    rpc Create(UserRequest) returns (UserResponse);
+}
