@@ -53,12 +53,23 @@ func (*server) CreateUser(ctx context.Context, req *launchpb.UserCreateRequest) 
 		},
 	)
 	user := gocloak.User{
-		FirstName:   gocloak.StringP(""),
-		LastName:    gocloak.StringP(""),
-		Email:       gocloak.StringP(email),
-		Enabled:     gocloak.BoolP(true),
-		Username:    gocloak.StringP(username),
+		FirstName: gocloak.StringP(""),
+		LastName:  gocloak.StringP(""),
+		Email:     gocloak.StringP(email),
+		Enabled:   gocloak.BoolP(true),
+		Username:  gocloak.StringP(username),
+		Groups: &[]string{
+			username + "_role",
+		},
 		Credentials: &cred,
+	}
+	group := gocloak.Group{
+		Name: gocloak.StringP(username + "_role"),
+	}
+	_, err = kc.CreateGroup(ctx, token.AccessToken, kRealm, group)
+	if err != nil {
+		fmt.Printf("Oh no!, failed to create user :( %v\n", err)
+		return errUsr, err
 	}
 	_, err = kc.CreateUser(ctx, token.AccessToken, kRealm, user)
 
@@ -82,6 +93,7 @@ func (*server) CreateUser(ctx context.Context, req *launchpb.UserCreateRequest) 
 			},
 		},
 	}
+
 	_, err = ns.Create(context.TODO(), nd, metav1.CreateOptions{})
 	if err != nil {
 		fmt.Printf("Namespace creation failed!: %v\n", err)
@@ -98,5 +110,11 @@ func (*server) CreateUser(ctx context.Context, req *launchpb.UserCreateRequest) 
 		},
 	}
 	fmt.Printf("User created: %v", username)
+	err = kubeclient.CreateUserRole(username)
+	if err != nil {
+		fmt.Printf("Role creation error failed!: %v\n", err)
+		return errUsr, err
+
+	}
 	return response, nil
 }
