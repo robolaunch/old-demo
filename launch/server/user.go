@@ -3,6 +3,7 @@ package main
 import (
 	"context"
 	"fmt"
+	"os"
 
 	"github.com/Nerzal/gocloak/v10"
 	launchpb "github.com/robolaunch/demo-launch/launch/api/launch"
@@ -12,20 +13,34 @@ import (
 	"github.com/robolaunch/demo-launch/launch/pkg/kubeclient"
 )
 
-var kc = gocloak.NewClient("https://keycloaktest.provedge.cloud")
-var clientId = "master"
+var kUrl = os.Getenv("KEYCLOAK_URL")
+var kUser = os.Getenv("KEYCLOAK_ADMIN_USERNAME")
+var kPass = os.Getenv("KEYCLOAK_ADMIN_PASSWORD")
+var kRealm = os.Getenv("KEYCLOAK_REALM")
+var kCli = os.Getenv("KEYCLOAK_CLIENT")
+var kc = gocloak.NewClient(kUrl)
 
 func (*server) CreateUser(ctx context.Context, req *launchpb.UserCreateRequest) (*launchpb.UserResponse, error) {
-	newContext := context.Background()
-	token, err := kc.LoginAdmin(newContext, "admin", "admin", clientId)
+	errUsr := &launchpb.UserResponse{
+		IsOk: false,
+		User: &launchpb.User{
+			Username:     "",
+			Password:     "",
+			Email:        "",
+			Organization: "",
+		},
+	}
 
+	newContext := context.Background()
+	// To authenticate keycloak server
+	token, err := kc.LoginAdmin(newContext, kUser, kPass, kCli)
 	if err != nil {
 		fmt.Println("Something wrong with the credentials or url", err)
-		return nil, err
+		return errUsr, err
 
 	}
+	//Get User information from endpoint.
 	username := req.GetUser().GetUsername()
-	// password := req.GetPassword()
 	email := req.GetUser().GetEmail()
 	password := req.GetUser().GetPassword()
 	organization := req.GetUser().GetOrganization()
@@ -45,18 +60,19 @@ func (*server) CreateUser(ctx context.Context, req *launchpb.UserCreateRequest) 
 		Username:    gocloak.StringP(username),
 		Credentials: &cred,
 	}
-	_, err = kc.CreateUser(ctx, token.AccessToken, "master", user)
+	_, err = kc.CreateUser(ctx, token.AccessToken, kRealm, user)
 
 	if err != nil {
-		fmt.Printf("Oh no!, failed to create user :( %v", err)
-		return nil, err
+		fmt.Printf("Oh no!, failed to create user :( %v\n", err)
+		return errUsr, err
 	}
 
+	clientset, err := kubeclient.GetKubeClient()
 	if err != nil {
-		panic(err)
-	}
+		fmt.Printf("Kubernetes client connection failed: %v\n", err)
+		return errUsr, err
 
-	clientset, _ := kubeclient.GetKubeClient()
+	}
 	ns := clientset.CoreV1().Namespaces()
 	nd := &v1.Namespace{
 		ObjectMeta: metav1.ObjectMeta{
@@ -68,7 +84,9 @@ func (*server) CreateUser(ctx context.Context, req *launchpb.UserCreateRequest) 
 	}
 	_, err = ns.Create(context.TODO(), nd, metav1.CreateOptions{})
 	if err != nil {
-		panic(err)
+		fmt.Printf("Namespace creation failed!: %v\n", err)
+		return errUsr, err
+
 	}
 	response := &launchpb.UserResponse{
 		IsOk: true,
@@ -79,5 +97,6 @@ func (*server) CreateUser(ctx context.Context, req *launchpb.UserCreateRequest) 
 			Organization: organization,
 		},
 	}
+	fmt.Printf("User created: %v", username)
 	return response, nil
 }
