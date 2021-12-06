@@ -17,6 +17,8 @@ func (*server) CreateUser(ctx context.Context, req *launchpb.UserCreateRequest) 
 	email := req.GetUser().GetEmail()
 	password := req.GetUser().GetPassword()
 	organization := req.GetUser().GetOrganization()
+
+	// Create user on Keycloak
 	err := account.CreateUser(&account.User{
 		Username:     username,
 		Email:        email,
@@ -27,13 +29,16 @@ func (*server) CreateUser(ctx context.Context, req *launchpb.UserCreateRequest) 
 		fmt.Printf("User creation failed: %v\n", err)
 		return nil, err
 	}
-	err = kubeclient.CreateNamespace(username)
 
+	//Create namespace for user
+	err = kubeclient.CreateNamespace(username)
 	if err != nil {
 		fmt.Printf("Namespace creation failed!: %v\n", err)
 		return nil, err
 
 	}
+
+	//Create user response to reach information.
 	response := &launchpb.UserResponse{
 		IsOk: true,
 		User: &launchpb.User{
@@ -50,5 +55,42 @@ func (*server) CreateUser(ctx context.Context, req *launchpb.UserCreateRequest) 
 		return nil, err
 
 	}
+	return response, nil
+}
+
+func (*server) DeleteUser(ctx context.Context, req *launchpb.UserDeleteRequest) (*launchpb.UserResponse, error) {
+
+	//Get User information from endpoint.
+	username := req.GetUsername()
+
+	// Create user on Keycloak
+	err := account.DeleteUser(&account.User{
+		Username: username,
+	})
+	if err != nil {
+		fmt.Printf("User deletion failed: %v\n", err)
+		return nil, err
+	}
+
+	//Create namespace for user
+	err = kubeclient.DeleteNamespace(username)
+	if err != nil {
+		fmt.Printf("Namespace deletion failed!: %v\n", err)
+		return nil, err
+
+	}
+
+	//Create user response to reach information.
+	response := &launchpb.UserResponse{
+		IsOk: true,
+		User: &launchpb.User{
+			Username:     username,
+			Password:     "",
+			Email:        "",
+			Organization: "",
+		},
+	}
+	fmt.Printf("User deleted: %v", username)
+
 	return response, nil
 }

@@ -99,3 +99,17 @@ func CreateNamespace(name string) error {
 	}
 	return nil
 }
+
+func DeleteNamespace(name string) error {
+	client, err := GetKubeClient()
+	if err != nil {
+		return err
+	}
+	ns := client.CoreV1().Namespaces()
+
+	err = ns.Delete(context.TODO(), name, metav1.DeleteOptions{})
+	if err != nil {
+		return err
+	}
+	return nil
+}

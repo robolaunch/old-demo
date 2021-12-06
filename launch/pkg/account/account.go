@@ -66,3 +66,42 @@ func CreateUser(u *User) error {
 	}
 	return nil
 }
+
+func DeleteUser(u *User) error {
+	// Keycloak connection part
+	ctx := context.Background()
+	token, err := kc.LoginAdmin(ctx, kUser, kPass, kCli)
+	if err != nil {
+		fmt.Println("Something wrong with the credentials or url", err)
+		return err
+
+	}
+	//To find user id
+	fmt.Println(u.Username)
+	userInfo, err := kc.GetUsers(ctx, token.AccessToken, kRealm, gocloak.GetUsersParams{
+		Username: &u.Username,
+	})
+	if err != nil {
+		return err
+	}
+	//User account deletion operation
+	err = kc.DeleteUser(ctx, token.AccessToken, kRealm, *userInfo[0].ID)
+	if err != nil {
+		fmt.Printf("User deletion failed: %v\n", err)
+		return err
+	}
+
+	//Defined user group deletion
+	groupInfo, err := kc.GetGroups(ctx, token.AccessToken, kRealm, gocloak.GetGroupsParams{
+		Search: gocloak.StringP(u.Username + "_role"),
+	})
+	if err != nil {
+		return err
+	}
+	err = kc.DeleteGroup(ctx, token.AccessToken, kRealm, *groupInfo[0].ID)
+	if err != nil {
+		fmt.Printf("Group deletion failed: %v\n", err)
+		return err
+	}
+	return nil
+}
