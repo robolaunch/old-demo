@@ -4,10 +4,13 @@ import (
 	"context"
 	"fmt"
 
+	deploy "k8s.io/api/apps/v1"
 	v1ns "k8s.io/api/core/v1"
+
 	v1 "k8s.io/api/rbac/v1"
 
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
+	"k8s.io/apimachinery/pkg/util/intstr"
 	"k8s.io/client-go/kubernetes"
 	"k8s.io/client-go/tools/clientcmd"
 )
@@ -38,7 +41,7 @@ func CreateUserRole(u string) error {
 			Namespace: u,
 		},
 		Rules: []v1.PolicyRule{
-			v1.PolicyRule{
+			{
 				APIGroups: []string{""},
 				Resources: []string{"pods,services"},
 				Verbs:     []string{"get", "list"},
@@ -52,7 +55,7 @@ func CreateUserRole(u string) error {
 			Namespace: u,
 		},
 		Subjects: []v1.Subject{
-			v1.Subject{
+			{
 				Kind:     "Group",
 				Name:     u + "_role",
 				APIGroup: "rbac.authorization.k8s.io",
@@ -109,6 +112,83 @@ func DeleteNamespace(name string) error {
 
 	err = ns.Delete(context.TODO(), name, metav1.DeleteOptions{})
 	if err != nil {
+		return err
+	}
+	return nil
+}
+
+func CreateDeploymentService(name string, namespace string) error {
+	client, err := GetKubeClient()
+	if err != nil {
+		return err
+	}
+	replicas := int32(1)
+	dp := client.AppsV1().Deployments(namespace)
+	//Deployment definition template
+	deployment := deploy.Deployment{
+		ObjectMeta: metav1.ObjectMeta{
+			Name:      name,
+			Namespace: namespace,
+		},
+		Spec: deploy.DeploymentSpec{
+			Selector: &metav1.LabelSelector{
+				MatchLabels: map[string]string{
+					"robot": name + "robolaunch",
+				},
+			},
+			Replicas: &replicas,
+			Template: v1ns.PodTemplateSpec{
+				ObjectMeta: metav1.ObjectMeta{
+					Labels: map[string]string{
+						"robot": name + "robolaunch",
+					},
+				},
+				Spec: v1ns.PodSpec{
+					Containers: []v1ns.Container{
+						{
+							Name:  "nginx",
+							Image: "nginx:1.14.2",
+							Ports: []v1ns.ContainerPort{
+								{
+									ContainerPort: 80,
+								},
+							},
+						},
+					},
+				},
+			},
+		},
+	}
+	//Service Definition Template
+	svc := client.CoreV1().Services(namespace)
+	service := v1ns.Service{
+		ObjectMeta: metav1.ObjectMeta{
+			Name:      name,
+			Namespace: namespace,
+		},
+		Spec: v1ns.ServiceSpec{
+			Selector: map[string]string{
+				"robot": name + "robolaunch",
+			},
+			Ports: []v1ns.ServicePort{
+				{
+					Protocol:   v1ns.ProtocolTCP,
+					Port:       80,
+					TargetPort: intstr.FromInt(80),
+				},
+			},
+		},
+	}
+
+	//Create deployment!
+	_, err = dp.Create(context.TODO(), &deployment, metav1.CreateOptions{})
+	if err != nil {
+		fmt.Printf("Deployment did not created: %v", err)
+		return err
+	}
+	_, err = svc.Create(context.TODO(), &service, metav1.CreateOptions{})
+	if err != nil {
+		fmt.Printf("Service did not created: %v", err)
 		return err
 	}
 	return nil
