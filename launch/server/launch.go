@@ -31,3 +31,31 @@ func (*server) CreateLaunch(ctx context.Context, req *launchpb.LaunchCreateReque
 		Launch: req.GetLaunch(),
 	}, nil
 }
+
+func (*server) DeleteLaunch(ctx context.Context, req *launchpb.LaunchDeleteRequest) (*launchpb.LaunchResponse, error) {
+	// Username could be used for namespace in this version.
+	username := req.GetUsername()
+	// namespace := req.GetLaunch().GetNamespace()
+
+	//Launch Name
+	name := req.GetName()
+
+	//TODO: Check user is available before creation
+
+	//Predefined deployment and docker templates.
+	// Not implemented yet.
+	// robotType := req.GetLaunch().GetRobotType()
+	err := kubeclient.DeleteDeploymentService(name, username)
+	if err != nil {
+		return nil, err
+	}
+	return &launchpb.LaunchResponse{
+		IsOk: true,
+		Launch: &launchpb.Launch{
+			Username:  username,
+			Namespace: username,
+			RobotType: "default",
+			Name:      name,
+		},
+	}, nil
+}
