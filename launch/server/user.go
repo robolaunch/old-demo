@@ -7,8 +7,6 @@ import (
 
 	"github.com/Nerzal/gocloak/v10"
 	launchpb "github.com/robolaunch/demo-launch/launch/api/launch"
-	v1 "k8s.io/api/core/v1"
-	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 
 	"github.com/robolaunch/demo-launch/launch/pkg/kubeclient"
 )
@@ -21,22 +19,13 @@ var kCli = os.Getenv("KEYCLOAK_CLIENT")
 var kc = gocloak.NewClient(kUrl)
 
 func (*server) CreateUser(ctx context.Context, req *launchpb.UserCreateRequest) (*launchpb.UserResponse, error) {
-	errUsr := &launchpb.UserResponse{
-		IsOk: false,
-		User: &launchpb.User{
-			Username:     "",
-			Password:     "",
-			Email:        "",
-			Organization: "",
-		},
-	}
 
 	newContext := context.Background()
 	// To authenticate keycloak server
 	token, err := kc.LoginAdmin(newContext, kUser, kPass, kCli)
 	if err != nil {
 		fmt.Println("Something wrong with the credentials or url", err)
-		return errUsr, err
+		return nil, err
 
 	}
 	//Get User information from endpoint.
@@ -69,35 +58,20 @@ func (*server) CreateUser(ctx context.Context, req *launchpb.UserCreateRequest) 
 	_, err = kc.CreateGroup(ctx, token.AccessToken, kRealm, group)
 	if err != nil {
 		fmt.Printf("Oh no!, failed to create user :( %v\n", err)
-		return errUsr, err
+		return nil, err
 	}
 	_, err = kc.CreateUser(ctx, token.AccessToken, kRealm, user)
 
 	if err != nil {
 		fmt.Printf("Oh no!, failed to create user :( %v\n", err)
-		return errUsr, err
+		return nil, err
 	}
 
-	clientset, err := kubeclient.GetKubeClient()
-	if err != nil {
-		fmt.Printf("Kubernetes client connection failed: %v\n", err)
-		return errUsr, err
+	err = kubeclient.CreateNamespace(username)
 
-	}
-	ns := clientset.CoreV1().Namespaces()
-	nd := &v1.Namespace{
-		ObjectMeta: metav1.ObjectMeta{
-			Name: username,
-			Labels: map[string]string{
-				username: "created",
-			},
-		},
-	}
-
-	_, err = ns.Create(context.TODO(), nd, metav1.CreateOptions{})
 	if err != nil {
 		fmt.Printf("Namespace creation failed!: %v\n", err)
-		return errUsr, err
+		return nil, err
 
 	}
 	response := &launchpb.UserResponse{
@@ -113,7 +87,7 @@ func (*server) CreateUser(ctx context.Context, req *launchpb.UserCreateRequest) 
 	err = kubeclient.CreateUserRole(username)
 	if err != nil {
 		fmt.Printf("Role creation error failed!: %v\n", err)
-		return errUsr, err
+		return nil, err
 
 	}
 	return response, nil

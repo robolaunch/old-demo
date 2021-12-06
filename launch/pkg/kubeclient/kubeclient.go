@@ -4,7 +4,9 @@ import (
 	"context"
 	"fmt"
 
+	v1ns "k8s.io/api/core/v1"
 	v1 "k8s.io/api/rbac/v1"
+
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/client-go/kubernetes"
 	"k8s.io/client-go/tools/clientcmd"
@@ -75,4 +77,25 @@ func CreateUserRole(u string) error {
 	}
 	return nil
 
+}
+
+func CreateNamespace(user string) error {
+	client, err := GetKubeClient()
+	if err != nil {
+		return err
+	}
+	ns := client.CoreV1().Namespaces()
+	nd := &v1ns.Namespace{
+		ObjectMeta: metav1.ObjectMeta{
+			Name: user,
+			Labels: map[string]string{
+				user: "created",
+			},
+		},
+	}
+	_, err = ns.Create(context.TODO(), nd, metav1.CreateOptions{})
+	if err != nil {
+		return err
+	}
+	return nil
 }
