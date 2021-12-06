@@ -59,7 +59,7 @@ func (*server) CreateUser(ctx context.Context, req *launchpb.UserCreateRequest) 
 }
 
 func (*server) DeleteUser(ctx context.Context, req *launchpb.UserDeleteRequest) (*launchpb.UserResponse, error) {
-
+	fmt.Println("Triggered call!")
 	//Get User information from endpoint.
 	username := req.GetUsername()
 

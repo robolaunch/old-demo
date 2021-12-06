@@ -2,9 +2,39 @@ import type { NextPage } from "next";
 import Head from "next/head";
 import Image from "next/image";
 import styles from "../styles/Home.module.css";
+import { UserDeleteRequest, UserResponse, UserCreateRequest, User } from "../api/launch_pb";
+import { LaunchServiceClient } from "../api/launch_grpc_web_pb";
 
+
+
+const client= new LaunchServiceClient("http://159.69.216.106:8080")
+const request = new UserDeleteRequest();
+const createReq = new UserCreateRequest();
+const test_user = new User()
+test_user.setUsername("webrpc")
+test_user.setPassword("webrpc")
+test_user.setEmail("webrpc@rpc.com")
+test_user.setOrganization("Robolaunch")
+
+
+
+createReq.setUser(test_user)
+request.setUsername("webrpc")
+const deleteMethod =()=>{
+  client.deleteUser(request, {}, (err, response) => {
+    console.log(err)
+    console.log(response.getIsOk())
+  })
+}
+
+const createMethod =()=>{
+  client.createUser(createReq, {}, (err, response) => {
+    console.log(err)
+    console.log(response.getIsOk())
+  })
+}
 const Home: NextPage = () => {
-  return (
+    return (
     <div className={styles.container}>
       <Head>
         <title>Robolaunch GRPC-Web</title>
@@ -23,14 +53,14 @@ const Home: NextPage = () => {
           <a href="#" className={styles.card}>
             <h2>Delete User &rarr;</h2>
             <p>gRPC Call for delete user!</p>
-            <button onClick={() => alert("stop")}>Click me!</button>
+            <button onClick={() => deleteMethod()}>Click me!</button>
           </a>
 
           <a href="#" className={styles.card}>
             <h2>Create User &rarr;</h2>
             <p>gRPC Call for create user!</p>
 
-            <button onClick={() => alert("stop")}>Click me!</button>
+            <button onClick={() => createMethod()}>Click me!</button>
           </a>
 
           <a href="#" className={styles.card}>
