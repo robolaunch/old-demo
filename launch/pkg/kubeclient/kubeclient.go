@@ -12,6 +12,7 @@ import (
 	"k8s.io/client-go/tools/clientcmd"
 )
 
+//Create kubernetes connection.
 func GetKubeClient() (*kubernetes.Clientset, error) {
 	config, err := clientcmd.BuildConfigFromFlags("", "./config.yaml")
 	if err != nil {
@@ -22,7 +23,6 @@ func GetKubeClient() (*kubernetes.Clientset, error) {
 		return nil, err
 	}
 	return client, err
-
 }
 
 // The following function create role for access user resource at namespace
@@ -31,7 +31,7 @@ func CreateUserRole(u string) error {
 	if err != nil {
 		fmt.Printf("Client connection failed: %v", err)
 	}
-	// Template of Role
+	// Pre-defined user role
 	role := &v1.Role{
 		ObjectMeta: metav1.ObjectMeta{
 			Name:      u + "_role",
@@ -45,7 +45,7 @@ func CreateUserRole(u string) error {
 			},
 		},
 	}
-
+	//role binding for defined role
 	rbind := &v1.RoleBinding{
 		ObjectMeta: metav1.ObjectMeta{
 			Name:      u + "_role",
@@ -65,7 +65,6 @@ func CreateUserRole(u string) error {
 		},
 	}
 	//Template of role-binding to keycloak group
-
 	// Deploy role to cluster
 	_, err = client.RbacV1().Roles(u).Create(context.TODO(), role, metav1.CreateOptions{})
 	if err != nil {
@@ -79,7 +78,8 @@ func CreateUserRole(u string) error {
 
 }
 
-func CreateNamespace(user string) error {
+// Create namespace for given name!
+func CreateNamespace(name string) error {
 	client, err := GetKubeClient()
 	if err != nil {
 		return err
@@ -87,9 +87,9 @@ func CreateNamespace(user string) error {
 	ns := client.CoreV1().Namespaces()
 	nd := &v1ns.Namespace{
 		ObjectMeta: metav1.ObjectMeta{
-			Name: user,
+			Name: name,
 			Labels: map[string]string{
-				user: "created",
+				name: "created",
 			},
 		},
 	}
