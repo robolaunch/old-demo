@@ -4,13 +4,20 @@ import (
 	"context"
 
 	launchpb "github.com/robolaunch/demo-launch/launch/api/launch"
+	"github.com/robolaunch/demo-launch/launch/pkg/account"
 	"github.com/robolaunch/demo-launch/launch/pkg/kubeclient"
+	"google.golang.org/grpc/metadata"
 )
 
 //This function should create deployment & service for this version
 //TODO: Implement helm chart for it.
 func (*server) CreateLaunch(ctx context.Context, req *launchpb.LaunchCreateRequest) (*launchpb.LaunchResponse, error) {
 	// Username could be used for namespace in this version.
+	headers, _ := metadata.FromIncomingContext(ctx)
+
+	// Check user is here!
+	_ = account.CurrentUser(headers["authorization"][0])
+
 	username := req.GetLaunch().GetUsername()
 	// namespace := req.GetLaunch().GetNamespace()
 
