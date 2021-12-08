@@ -4,10 +4,12 @@ import { KeycloakInstance, KeycloakTokenParsed } from "keycloak-js";
 import { NextPage } from "next";
 import { useEffect, useState } from "react";
 import withAuth from "../components/auth/withAuth";
+import CreateLaunch from "../components/launches/CreateLaunch";
+import LaunchTable from "../components/launches/LaunchTable";
 import GeneralLayout from "../components/layout/layout";
 import Nav from "../components/layout/nav";
 
-const ProtectedPage: NextPage = () => {
+const LaunchPage: NextPage = () => {
   const { keycloak, initialized } = useKeycloak<KeycloakInstance>();
   const [username, setUsername] = useState<KeycloakTokenParsed>();
   useEffect(() => {
@@ -17,10 +19,10 @@ const ProtectedPage: NextPage = () => {
     }
   });
   return (
-    <GeneralLayout title="hello">
-      <Text>Hello</Text>
+    <GeneralLayout title="Launches">
+      <LaunchTable />
     </GeneralLayout>
   );
 };
 
-export default withAuth(ProtectedPage);
+export default withAuth(LaunchPage);
