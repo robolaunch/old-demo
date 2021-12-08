@@ -2,39 +2,56 @@ import type { NextPage } from "next";
 import Head from "next/head";
 import Image from "next/image";
 import styles from "../styles/Home.module.css";
-import { UserDeleteRequest, UserResponse, UserCreateRequest, User } from "../api/launch_pb";
+import {
+  UserDeleteRequest,
+  UserResponse,
+  UserCreateRequest,
+  User,
+} from "../api/launch_pb";
 import { LaunchServiceClient } from "../api/launch_grpc_web_pb";
+import { useKeycloak } from "@react-keycloak/ssr";
+import { KeycloakInstance } from "keycloak-js";
+import { useEffect } from "react";
+import { useRouter } from "next/router";
 
-
-
-const client= new LaunchServiceClient("http://159.69.216.106:8080")
+const client = new LaunchServiceClient("http://159.69.216.106:8080");
 const request = new UserDeleteRequest();
 const createReq = new UserCreateRequest();
-const test_user = new User()
-test_user.setUsername("webrpc")
-test_user.setPassword("webrpc")
-test_user.setEmail("webrpc@rpc.com")
-test_user.setOrganization("Robolaunch")
+const test_user = new User();
+test_user.setUsername("webrpc");
+test_user.setPassword("webrpc");
+test_user.setEmail("webrpc@rpc.com");
+test_user.setOrganization("Robolaunch");
 
-
-
-createReq.setUser(test_user)
-request.setUsername("webrpc")
-const deleteMethod =()=>{
+createReq.setUser(test_user);
+request.setUsername("webrpc");
+const deleteMethod = () => {
   client.deleteUser(request, {}, (err, response) => {
-    console.log(err)
-    console.log(response.getIsOk())
-  })
-}
+    console.log(err);
+    console.log(response.getIsOk());
+  });
+};
 
-const createMethod =()=>{
+const createMethod = () => {
   client.createUser(createReq, {}, (err, response) => {
-    console.log(err)
-    console.log(response.getIsOk())
-  })
-}
+    console.log(err);
+    console.log(response.getIsOk());
+  });
+};
 const Home: NextPage = () => {
-    return (
+  const { keycloak, initialized } = useKeycloak<KeycloakInstance>();
+  const router = useRouter();
+
+  useEffect(() => {
+    if (initialized && keycloak?.authenticated) {
+      router.push("/protected");
+    }
+  }, [initialized, keycloak?.authenticated]);
+
+  const login = () => {
+    if (keycloak) window.location.href = keycloak?.createLoginUrl();
+  };
+  return (
     <div className={styles.container}>
       <Head>
         <title>Robolaunch GRPC-Web</title>
@@ -46,7 +63,12 @@ const Home: NextPage = () => {
         <h1 className={styles.title}>
           Welcome to <a href="http://robolaunch.io">Robolaunch</a>
         </h1>
+        <a href="#" className={styles.card}>
+          <h2>Login &rarr;</h2>
+          <p>gRPC Call for create user!</p>
 
+          <button onClick={() => login()}>Click me!</button>
+        </a>
         <p className={styles.description}>Example GRPC Web</p>
 
         <div className={styles.grid}>
