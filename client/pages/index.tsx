@@ -7,6 +7,8 @@ import {
   UserResponse,
   UserCreateRequest,
   User,
+  LaunchCreateRequest,
+  Launch,
 } from "../api/launch_pb";
 import { LaunchServiceClient } from "../api/launch_grpc_web_pb";
 import { useKeycloak } from "@react-keycloak/ssr";
@@ -16,24 +18,40 @@ import { useRouter } from "next/router";
 
 const client = new LaunchServiceClient("http://159.69.216.106:8080");
 const request = new UserDeleteRequest();
-const createReq = new UserCreateRequest();
+const createReq = new LaunchCreateRequest();
+const userReq = new UserCreateRequest();
+
+const testLaunch = new Launch();
 const test_user = new User();
+
+testLaunch.setUsername("webrpc");
+testLaunch.setNamespace("webrpc");
+testLaunch.setName("my-deneme");
+testLaunch.setRobotType("DemoType");
 test_user.setUsername("webrpc");
+
 test_user.setPassword("webrpc");
 test_user.setEmail("webrpc@rpc.com");
 test_user.setOrganization("Robolaunch");
+createReq.setLaunch(testLaunch);
+userReq.setUser(test_user);
 
-createReq.setUser(test_user);
 request.setUsername("webrpc");
 const deleteMethod = () => {
-  client.deleteUser(request, {}, (err, response) => {
-    console.log(err);
-    console.log(response.getIsOk());
-  });
+  client.deleteUser(
+    request,
+    {
+      authorization: "",
+    },
+    (err, response) => {
+      console.log(err);
+      console.log(response.getIsOk());
+    }
+  );
 };
 
 const createMethod = () => {
-  client.createUser(createReq, {}, (err, response) => {
+  client.createUser(userReq, {}, (err, response) => {
     console.log(err);
     console.log(response.getIsOk());
   });

@@ -2,10 +2,23 @@ import { Avatar } from "@chakra-ui/avatar";
 import { Divider, Flex, Heading, Text } from "@chakra-ui/layout";
 import { IconButton } from "@chakra-ui/react";
 import { FiActivity, FiBox, FiMenu } from "react-icons/fi";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import NavItem from "./navitem";
+import { useKeycloak } from "@react-keycloak/ssr";
+import { KeycloakInstance } from "keycloak-js";
 
 const Nav: React.FC = () => {
+  //Keycloak instance create
+  const { keycloak, initialized } = useKeycloak<KeycloakInstance>();
+
+  const [username, setUsername] = useState("");
+
+  useEffect(() => {
+    if (initialized && keycloak) {
+      // @ts-ignore
+      setUsername(keycloak.idTokenParsed?.preferred_username);
+    }
+  });
   const [smallNav, setsmallNav] = useState(false);
   return (
     <Flex
@@ -41,12 +54,14 @@ const Nav: React.FC = () => {
           icon={FiBox}
           active={false}
           text="Marketplace"
+          path="/protected"
         />
         <NavItem
           smallNav={smallNav}
           icon={FiActivity}
           active={false}
           text="Launches"
+          path="/launches"
         />
       </Flex>
       <Flex
@@ -61,7 +76,7 @@ const Nav: React.FC = () => {
           <Avatar size="sm" />
           <Flex flexDir="column" ml={4} display={smallNav ? "none" : "flex"}>
             <Heading as="h3" size="small">
-              Username
+              {username}
             </Heading>
             <Text color="gray">Role</Text>
           </Flex>

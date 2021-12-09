@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 
 import {
   Modal,
@@ -14,10 +14,72 @@ import {
   FormControl,
   Input,
   FormLabel,
+  Text,
+  Icon,
 } from "@chakra-ui/react";
-import { IoAdd } from "react-icons/io5";
+import { IoAdd, IoSend, IoCheckmarkCircle } from "react-icons/io5";
+import { Launch, LaunchCreateRequest } from "../../api/launch_pb";
+import { LaunchServiceClient } from "../../api/launch_grpc_web_pb";
+import getConfig from "next/config";
+import { useKeycloak } from "@react-keycloak/ssr";
+import { KeycloakInstance } from "keycloak-js";
 
 const CreateLaunch = () => {
+  // Get config from Next.config.js
+  const { publicRuntimeConfig } = getConfig();
+
+  //Launch gRPC connection declaration
+  const client = new LaunchServiceClient(publicRuntimeConfig.launchSvc);
+  const launchRequest = new LaunchCreateRequest();
+  const launch = new Launch();
+
+  //Get user information from auth provider
+  const { keycloak, initialized } = useKeycloak<KeycloakInstance>();
+
+  //State for paramaters of create launch request
+  const [username, setUsername] = useState("");
+  const [name, setName] = useState("");
+  // const [namespace, setNamespace] = useState("");
+  //Predefined
+  const [type, setType] = useState("DemoType");
+  const [result, setResult] = useState(false);
+  // Username should taken from Auth provider
+  useEffect(() => {
+    if (initialized && keycloak) {
+      // @ts-ignore
+      setUsername(keycloak.idTokenParsed?.preferred_username);
+    }
+  });
+
+  const createLaunch = () => {
+    if (username === "" || name === "") {
+      console.error("Operation failed");
+      return;
+    }
+    launch.setUsername(username);
+    launch.setNamespace(username);
+    launch.setName(name);
+    launch.setRobotType(type);
+    launchRequest.setLaunch(launch);
+    if (initialized && keycloak?.token) {
+      client.createLaunch(
+        launchRequest,
+        {
+          authorization: keycloak?.token,
+        },
+        (err, response) => {
+          if (err !== null) {
+            console.log(err);
+            return;
+          }
+          if (response.getIsOk()) {
+            setResult(true);
+            console.log("Launch created");
+          }
+        }
+      );
+    }
+  };
   const onOpen = () => {
     setShow(true);
   };
@@ -48,15 +110,24 @@ const CreateLaunch = () => {
           <ModalBody>
             <FormControl mb={2}>
               <FormLabel>Launch name</FormLabel>
-              <Input placeholder="First name" />
+              <Input
+                value={name}
+                onChange={(e) => setName(e.target.value)}
+                placeholder="Name of deployment"
+              />
             </FormControl>
             <FormControl mb={2}>
-              <FormLabel>First name</FormLabel>
-              <Input placeholder="First name" />
+              <FormLabel>Type</FormLabel>
+              <Input
+                value={type}
+                onChange={(e) => setType(e.target.value)}
+                placeholder="Robot Type"
+                disabled
+              />
             </FormControl>
             <FormControl mb={2}>
               <FormLabel>Namespace</FormLabel>
-              <Input value="username" isDisabled={true} />
+              <Input value={username} isDisabled={true} />
             </FormControl>
           </ModalBody>
 
@@ -64,7 +135,10 @@ const CreateLaunch = () => {
             <Button colorScheme="blue" mr={3} onClick={onClose}>
               Close
             </Button>
-            <Button>Submit</Button>
+            <Button onClick={createLaunch}>
+              {result ? <Icon as={IoCheckmarkCircle} /> : <Icon as={IoSend} />}
+              <Text ml={2}>Submit</Text>
+            </Button>
           </ModalFooter>
         </ModalContent>
       </Modal>

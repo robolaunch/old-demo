@@ -16,6 +16,7 @@ import {
 import { FiPlay } from "react-icons/fi";
 import { IoStop, IoPlay } from "react-icons/io5";
 import CreateLaunch from "./CreateLaunch";
+import TableItem from "./TableItem";
 
 const LaunchTable: React.FC = () => {
   const [status, setStatus] = useState(true);
@@ -23,8 +24,6 @@ const LaunchTable: React.FC = () => {
 
   return (
     <Box>
-      <CreateLaunch />
-
       <Table>
         <Thead>
           <Th>Name</Th>
@@ -33,32 +32,24 @@ const LaunchTable: React.FC = () => {
           <Th></Th>
         </Thead>
         <Tbody>
-          <Tr>
-            <Td>new-robot</Td>
-            <Td fontWeight="600" color="gray.500">
-              Default Robot
-            </Td>
-            <Td>username</Td>
-            <Td>
-              <Icon
-                as={status ? IoStop : IoPlay}
-                _hover={{ color: status ? "red.500" : "green.500" }}
-              />
-            </Td>
-          </Tr>
-          <Tr>
-            <Td>new-robot</Td>
-            <Td fontWeight="600" color="gray.500">
-              Default Robot
-            </Td>
-            <Td>username</Td>
-            <Td>
-              <Icon
-                as={status2 ? IoStop : IoPlay}
-                _hover={{ color: status2 ? "red.500" : "green.500" }}
-              />
-            </Td>
-          </Tr>
+          <TableItem
+            name="new-robot"
+            namespace="default"
+            status={false}
+            type="DefaultRobot"
+          />
+          <TableItem
+            name="new-robot"
+            namespace="default"
+            status={true}
+            type="DefaultRobot"
+          />
+          <TableItem
+            name="new-robot"
+            namespace="default"
+            status={false}
+            type="DefaultRobot"
+          />
         </Tbody>
         <TableCaption>All launches listed</TableCaption>
       </Table>

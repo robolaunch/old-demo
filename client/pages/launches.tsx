@@ -19,9 +19,11 @@ const LaunchPage: NextPage = () => {
     }
   });
   return (
-    <GeneralLayout title="Launches">
+    <>
+      <CreateLaunch />
+
       <LaunchTable />
-    </GeneralLayout>
+    </>
   );
 };
 

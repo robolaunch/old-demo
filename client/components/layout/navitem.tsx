@@ -11,14 +11,17 @@ import {
 } from "@chakra-ui/react";
 import { FiMenu } from "react-icons/fi";
 import { IconType } from "react-icons";
+import NextLink from "next/link";
+
 interface Props {
   smallNav: boolean;
   icon: IconType;
   active: boolean;
   text: string;
+  path: string;
 }
 
-const NavItem: React.FC<Props> = ({ smallNav, active, icon, text }) => {
+const NavItem: React.FC<Props> = ({ smallNav, active, icon, text, path }) => {
   return (
     <Flex
       mt={30}
@@ -27,32 +30,34 @@ const NavItem: React.FC<Props> = ({ smallNav, active, icon, text }) => {
       alignItems={smallNav ? "center" : "flex-start"}
     >
       <Menu placement="right">
-        <Link
-          //@ts-ignore
-          backgroundColor={active && "#AEC8CA"}
-          p={3}
-          borderRadius={8}
-          _hover={{ textDecor: "none", backgroundColor: "#AEC8CA" }}
-          //@ts-ignore
-          w={smallNav && "100%"}
-        >
-          <MenuButton w="100%">
-            <Flex
-              justifyContent={smallNav ? "center" : "flex-start"}
-              alignItems={"center"}
-            >
-              <Icon
-                as={icon}
-                fontSize="xl"
-                mr={0}
-                color={active ? "#82AAAD" : "gray.500"}
-              />
-              <Text ml={5} display={smallNav ? "none" : "flex"}>
-                {text}
-              </Text>
-            </Flex>
-          </MenuButton>
-        </Link>
+        <NextLink href={path}>
+          <Link
+            //@ts-ignore
+            backgroundColor={active && "#AEC8CA"}
+            p={3}
+            borderRadius={8}
+            _hover={{ textDecor: "none", backgroundColor: "#AEC8CA" }}
+            //@ts-ignore
+            w={smallNav && "100%"}
+          >
+            <MenuButton w="100%">
+              <Flex
+                justifyContent={smallNav ? "center" : "flex-start"}
+                alignItems={"center"}
+              >
+                <Icon
+                  as={icon}
+                  fontSize="xl"
+                  mr={0}
+                  color={active ? "#82AAAD" : "gray.500"}
+                />
+                <Text ml={5} display={smallNav ? "none" : "flex"}>
+                  {text}
+                </Text>
+              </Flex>
+            </MenuButton>
+          </Link>
+        </NextLink>
       </Menu>
     </Flex>
   );
