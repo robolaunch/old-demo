@@ -36,6 +36,13 @@ export class LaunchServiceClient {
                response: launch_pb.LaunchResponse) => void
   ): grpcWeb.ClientReadableStream<launch_pb.LaunchResponse>;
 
+  listLaunch(
+    request: launch_pb.ListLaunchRequest,
+    metadata: grpcWeb.Metadata | undefined,
+    callback: (err: grpcWeb.RpcError,
+               response: launch_pb.ListLaunchResponse) => void
+  ): grpcWeb.ClientReadableStream<launch_pb.ListLaunchResponse>;
+
 }
 
 export class LaunchServicePromiseClient {
@@ -62,6 +69,11 @@ export class LaunchServicePromiseClient {
     request: launch_pb.LaunchDeleteRequest,
     metadata?: grpcWeb.Metadata
   ): Promise<launch_pb.LaunchResponse>;
+
+  listLaunch(
+    request: launch_pb.ListLaunchRequest,
+    metadata?: grpcWeb.Metadata
+  ): Promise<launch_pb.ListLaunchResponse>;
 
 }
 

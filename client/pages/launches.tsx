@@ -20,8 +20,6 @@ const LaunchPage: NextPage = () => {
   });
   return (
     <>
-      <CreateLaunch />
-
       <LaunchTable />
     </>
   );

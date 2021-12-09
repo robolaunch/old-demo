@@ -63,7 +63,8 @@ proto.launch.Launch.toObject = function(includeInstance, msg) {
     username: jspb.Message.getFieldWithDefault(msg, 1, ""),
     name: jspb.Message.getFieldWithDefault(msg, 2, ""),
     robotType: jspb.Message.getFieldWithDefault(msg, 3, ""),
-    namespace: jspb.Message.getFieldWithDefault(msg, 4, "")
+    namespace: jspb.Message.getFieldWithDefault(msg, 4, ""),
+    workloadStatus: jspb.Message.getFieldWithDefault(msg, 5, false)
   };
 
   if (includeInstance) {
@@ -115,6 +116,10 @@ proto.launch.Launch.deserializeBinaryFromReader = function(msg, reader) {
     case 4:
       var value = /** @type {string} */ (reader.readString());
       msg.setNamespace(value);
+      break;
+    case 5:
+      var value = /** @type {boolean} */ (reader.readBool());
+      msg.setWorkloadStatus(value);
       break;
     default:
       reader.skipField();
@@ -170,6 +175,13 @@ proto.launch.Launch.serializeBinaryToWriter = function(message, writer) {
   if (f.length > 0) {
     writer.writeString(
       4,
+      f
+    );
+  }
+  f = message.getWorkloadStatus();
+  if (f) {
+    writer.writeBool(
+      5,
       f
     );
   }
@@ -233,6 +245,23 @@ proto.launch.Launch.prototype.getNamespace = function() {
 /** @param {string} value */
 proto.launch.Launch.prototype.setNamespace = function(value) {
   jspb.Message.setProto3StringField(this, 4, value);
+};
+
+
+/**
+ * optional bool workload_status = 5;
+ * Note that Boolean fields may be set to 0/1 when serialized from a Java server.
+ * You should avoid comparisons like {@code val === true/false} in those cases.
+ * @return {boolean}
+ */
+proto.launch.Launch.prototype.getWorkloadStatus = function() {
+  return /** @type {boolean} */ (jspb.Message.getFieldWithDefault(this, 5, false));
+};
+
+
+/** @param {boolean} value */
+proto.launch.Launch.prototype.setWorkloadStatus = function(value) {
+  jspb.Message.setProto3BooleanField(this, 5, value);
 };
 
 

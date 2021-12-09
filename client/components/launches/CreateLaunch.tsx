@@ -24,7 +24,10 @@ import getConfig from "next/config";
 import { useKeycloak } from "@react-keycloak/ssr";
 import { KeycloakInstance } from "keycloak-js";
 
-const CreateLaunch = () => {
+interface Props {
+  onCreate: Function;
+}
+const CreateLaunch: React.FC<Props> = ({ onCreate }) => {
   // Get config from Next.config.js
   const { publicRuntimeConfig } = getConfig();
 
@@ -75,6 +78,12 @@ const CreateLaunch = () => {
           if (response.getIsOk()) {
             setResult(true);
             console.log("Launch created");
+            onCreate();
+            setTimeout(() => {
+              setShow(false);
+              setResult(false);
+              setName("");
+            }, 500);
           }
         }
       );

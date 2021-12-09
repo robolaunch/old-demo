@@ -107,6 +107,9 @@ export class Launch extends jspb.Message {
   getNamespace(): string;
   setNamespace(value: string): Launch;
 
+  getWorkloadStatus(): boolean;
+  setWorkloadStatus(value: boolean): Launch;
+
   serializeBinary(): Uint8Array;
   toObject(includeInstance?: boolean): Launch.AsObject;
   static toObject(includeInstance: boolean, msg: Launch): Launch.AsObject;
@@ -121,6 +124,41 @@ export namespace Launch {
     name: string,
     robotType: string,
     namespace: string,
+    workloadStatus: boolean,
+  }
+}
+
+export class ListLaunchResponse extends jspb.Message {
+  getLaunchesList(): Array<Launch>;
+  setLaunchesList(value: Array<Launch>): ListLaunchResponse;
+  clearLaunchesList(): ListLaunchResponse;
+  addLaunches(value?: Launch, index?: number): Launch;
+
+  serializeBinary(): Uint8Array;
+  toObject(includeInstance?: boolean): ListLaunchResponse.AsObject;
+  static toObject(includeInstance: boolean, msg: ListLaunchResponse): ListLaunchResponse.AsObject;
+  static serializeBinaryToWriter(message: ListLaunchResponse, writer: jspb.BinaryWriter): void;
+  static deserializeBinary(bytes: Uint8Array): ListLaunchResponse;
+  static deserializeBinaryFromReader(message: ListLaunchResponse, reader: jspb.BinaryReader): ListLaunchResponse;
+}
+
+export namespace ListLaunchResponse {
+  export type AsObject = {
+    launchesList: Array<Launch.AsObject>,
+  }
+}
+
+export class ListLaunchRequest extends jspb.Message {
+  serializeBinary(): Uint8Array;
+  toObject(includeInstance?: boolean): ListLaunchRequest.AsObject;
+  static toObject(includeInstance: boolean, msg: ListLaunchRequest): ListLaunchRequest.AsObject;
+  static serializeBinaryToWriter(message: ListLaunchRequest, writer: jspb.BinaryWriter): void;
+  static deserializeBinary(bytes: Uint8Array): ListLaunchRequest;
+  static deserializeBinaryFromReader(message: ListLaunchRequest, reader: jspb.BinaryReader): ListLaunchRequest;
+}
+
+export namespace ListLaunchRequest {
+  export type AsObject = {
   }
 }
 
