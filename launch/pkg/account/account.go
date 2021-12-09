@@ -80,6 +80,19 @@ func CurrentUser(token string) error {
 
 }
 
+func CurrentUserWithUsername(token string) (string, error) {
+	ctx := context.Background()
+	user, err := kc.GetUserInfo(ctx, token, kRealm)
+	if err != nil {
+		fmt.Println("Cannot reach user!", err)
+		return "", err
+	}
+	// To check user is same!
+	fmt.Println(*(user.PreferredUsername))
+	return *user.PreferredUsername, nil
+
+}
+
 func DeleteUser(u *User) error {
 	// Keycloak connection part
 	ctx := context.Background()

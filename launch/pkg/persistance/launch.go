@@ -14,12 +14,13 @@ var dbClient *mongo.Client
 var collection *mongo.Collection
 
 type Launch struct {
-	ID        primitive.ObjectID `bson:"_id,omitempty"`
-	Username  string             `bson:"username"`
-	Name      string             `bson:"name"`
-	Namespace string             `bson:"namespace"`
-	Type      string             `bson:"type"`
-	Status    bool               `bson:"status"`
+	ID             primitive.ObjectID `bson:"_id,omitempty"`
+	Username       string             `bson:"username"`
+	Name           string             `bson:"name"`
+	Namespace      string             `bson:"namespace"`
+	Type           string             `bson:"type"`
+	Status         bool               `bson:"status"`
+	WorkloadStatus bool               `bson:"workload_status"`
 }
 
 func CreateDbConnection(ctx context.Context, connectionString string, dbName string, collectionName string) error {

@@ -41,11 +41,12 @@ func (*server) CreateLaunch(ctx context.Context, req *launchpb.LaunchCreateReque
 
 	// Save user instance into MongoDB
 	err = persistance.SaveLaunch(&persistance.Launch{
-		Username:  username,
-		Name:      name,
-		Namespace: username,
-		Type:      "DemoType",
-		Status:    true,
+		Username:       username,
+		Name:           name,
+		Namespace:      username,
+		Type:           "DemoType",
+		Status:         true,
+		WorkloadStatus: true,
 	})
 	if err != nil {
 		fmt.Printf("User couldn't saved: %v", err)
@@ -88,4 +89,37 @@ func (*server) DeleteLaunch(ctx context.Context, req *launchpb.LaunchDeleteReque
 			Name:      name,
 		},
 	}, nil
+}
+
+func (*server) ListLaunch(ctx context.Context, req *launchpb.ListLaunchRequest) (*launchpb.ListLaunchResponse, error) {
+	// Check before list Launches
+	headers, _ := metadata.FromIncomingContext(ctx)
+	//Username will be used as a namespace in this version
+	username, err := account.CurrentUserWithUsername(headers["authorization"][0])
+	if err != nil {
+		return nil, err
+	}
+	pureLaunches, err := kubeclient.ListDeploymentService(username)
+	if err != nil {
+		return nil, err
+	}
+	var launches []*launchpb.Launch
+	for _, launch := range pureLaunches.Items {
+		var status bool
+		if launch.Status.AvailableReplicas > 0 {
+			status = true
+		} else {
+			status = false
+		}
+		launches = append(launches, &launchpb.Launch{
+			Username:       username,
+			Name:           launch.Name,
+			Namespace:      launch.Namespace,
+			RobotType:      "DefaultType",
+			WorkloadStatus: status,
+		})
+	}
+	fmt.Println("Request completed")
+	return &launchpb.ListLaunchResponse{Launches: launches}, nil
+
 }

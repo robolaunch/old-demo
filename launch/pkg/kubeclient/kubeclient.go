@@ -194,6 +194,18 @@ func CreateDeploymentService(name string, namespace string) error {
 	return nil
 }
 
+func ListDeploymentService(namespace string) (*deploy.DeploymentList, error) {
+	client, err := GetKubeClient()
+	if err != nil {
+		return nil, err
+	}
+	deploy, err := client.AppsV1().Deployments(namespace).List(context.TODO(), metav1.ListOptions{})
+	if err != nil {
+		return nil, err
+	}
+	return deploy, nil
+}
+
 func DeleteDeploymentService(name string, namespace string) error {
 	client, err := GetKubeClient()
 	if err != nil {
