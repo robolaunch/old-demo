@@ -3,6 +3,7 @@ package kubeclient
 import (
 	"context"
 	"fmt"
+	"strconv"
 
 	deploy "k8s.io/api/apps/v1"
 	v1ns "k8s.io/api/core/v1"
@@ -117,6 +118,19 @@ func DeleteNamespace(name string) error {
 	return nil
 }
 
+func GetService(name string, namespace string) (*v1ns.Service, error) {
+	client, err := GetKubeClient()
+	if err != nil {
+		return nil, err
+	}
+	svc, err := client.CoreV1().Services(namespace).Get(context.TODO(), name, metav1.GetOptions{})
+	if err != nil {
+		return nil, err
+	}
+	return svc, err
+
+}
+
 func CreateDeploymentService(name string, namespace string) error {
 	client, err := GetKubeClient()
 	if err != nil {
@@ -124,6 +138,61 @@ func CreateDeploymentService(name string, namespace string) error {
 	}
 	replicas := int32(1)
 	dp := client.AppsV1().Deployments(namespace)
+
+	//Create Service first after assign nodeport paramater to neko env var
+	//Service Definition Template
+	svc := client.CoreV1().Services(namespace)
+	service := v1ns.Service{
+		ObjectMeta: metav1.ObjectMeta{
+			Name:      name,
+			Namespace: namespace,
+		},
+		Spec: v1ns.ServiceSpec{
+			Selector: map[string]string{
+				"robot": name + "robolaunch",
+			},
+			Type: v1ns.ServiceTypeNodePort,
+			Ports: []v1ns.ServicePort{
+				{
+					Protocol:   v1ns.ProtocolTCP,
+					Port:       8080,
+					Name:       "http",
+					TargetPort: intstr.FromInt(8080),
+				},
+				{
+					Protocol:   v1ns.ProtocolUDP,
+					Port:       31555,
+					Name:       "neko-webrtc",
+					TargetPort: intstr.FromInt(31555),
+				},
+			},
+		},
+	}
+	createdSvc, err := svc.Create(context.TODO(), &service, metav1.CreateOptions{})
+	if err != nil {
+		fmt.Printf("Service did not created: %v", err)
+		return err
+	}
+
+	var udpPort int32
+
+	for _, port := range createdSvc.Spec.Ports {
+		if port.Name == "neko-webrtc" {
+			udpPort = port.NodePort
+		}
+	}
+
+	// update service with node port details! only for demo
+	//fetch service again!
+
+	createdSvc.Spec.Ports[1].Port = udpPort
+	createdSvc.Spec.Ports[1].TargetPort = intstr.FromInt(int(udpPort))
+
+	_, err = svc.Update(context.TODO(), createdSvc, metav1.UpdateOptions{})
+	if err != nil {
+		fmt.Printf("Service didn't  updated!:%v\n", err)
+		return err
+	}
 	//Deployment definition template
 	deployment := deploy.Deployment{
 		ObjectMeta: metav1.ObjectMeta{
@@ -146,35 +215,31 @@ func CreateDeploymentService(name string, namespace string) error {
 				Spec: v1ns.PodSpec{
 					Containers: []v1ns.Container{
 						{
-							Name:  "nginx",
-							Image: "nginx:1.14.2",
+							Name:  "neko",
+							Image: "m1k1o/neko:firefox",
+							Stdin: true,
+							TTY:   true,
 							Ports: []v1ns.ContainerPort{
 								{
-									ContainerPort: 80,
+									Name:          "http",
+									ContainerPort: 8080,
+									Protocol:      v1ns.ProtocolTCP,
 								},
+								{
+									Name:          "neko-webrtc",
+									ContainerPort: udpPort,
+									Protocol:      v1ns.ProtocolUDP,
+								},
+							},
+							Env: []v1ns.EnvVar{
+								{Name: "NEKO_BIND", Value: "0.0.0.0:8080"},
+								{Name: "NEKO_UDP_PORT", Value: strconv.Itoa(int(udpPort)) + "-" + strconv.Itoa(int(udpPort))},
+								{Name: "NEKO_EPR", Value: strconv.Itoa(int(udpPort)) + "-" + strconv.Itoa(int(udpPort))},
+								{Name: "NEKO_ICELITE", Value: "1"},
+								{Name: "NEKO_SCREEN", Value: "1920x1080@30"},
 							},
 						},
 					},
-				},
-			},
-		},
-	}
-	//Service Definition Template
-	svc := client.CoreV1().Services(namespace)
-	service := v1ns.Service{
-		ObjectMeta: metav1.ObjectMeta{
-			Name:      name,
-			Namespace: namespace,
-		},
-		Spec: v1ns.ServiceSpec{
-			Selector: map[string]string{
-				"robot": name + "robolaunch",
-			},
-			Ports: []v1ns.ServicePort{
-				{
-					Protocol:   v1ns.ProtocolTCP,
-					Port:       80,
-					TargetPort: intstr.FromInt(80),
 				},
 			},
 		},
@@ -186,11 +251,7 @@ func CreateDeploymentService(name string, namespace string) error {
 		fmt.Printf("Deployment did not created: %v", err)
 		return err
 	}
-	_, err = svc.Create(context.TODO(), &service, metav1.CreateOptions{})
-	if err != nil {
-		fmt.Printf("Service did not created: %v", err)
-		return err
-	}
+
 	return nil
 }
 

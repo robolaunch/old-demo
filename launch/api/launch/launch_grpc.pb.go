@@ -23,6 +23,7 @@ type LaunchServiceClient interface {
 	CreateLaunch(ctx context.Context, in *LaunchCreateRequest, opts ...grpc.CallOption) (*LaunchResponse, error)
 	DeleteLaunch(ctx context.Context, in *LaunchDeleteRequest, opts ...grpc.CallOption) (*LaunchResponse, error)
 	ListLaunch(ctx context.Context, in *ListLaunchRequest, opts ...grpc.CallOption) (*ListLaunchResponse, error)
+	GetLaunch(ctx context.Context, in *LaunchDetailRequest, opts ...grpc.CallOption) (*LaunchDetailResponse, error)
 }
 
 type launchServiceClient struct {
@@ -78,6 +79,15 @@ func (c *launchServiceClient) ListLaunch(ctx context.Context, in *ListLaunchRequ
 	return out, nil
 }
 
+func (c *launchServiceClient) GetLaunch(ctx context.Context, in *LaunchDetailRequest, opts ...grpc.CallOption) (*LaunchDetailResponse, error) {
+	out := new(LaunchDetailResponse)
+	err := c.cc.Invoke(ctx, "/launch.LaunchService/GetLaunch", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // LaunchServiceServer is the server API for LaunchService service.
 // All implementations must embed UnimplementedLaunchServiceServer
 // for forward compatibility
@@ -87,6 +97,7 @@ type LaunchServiceServer interface {
 	CreateLaunch(context.Context, *LaunchCreateRequest) (*LaunchResponse, error)
 	DeleteLaunch(context.Context, *LaunchDeleteRequest) (*LaunchResponse, error)
 	ListLaunch(context.Context, *ListLaunchRequest) (*ListLaunchResponse, error)
+	GetLaunch(context.Context, *LaunchDetailRequest) (*LaunchDetailResponse, error)
 	mustEmbedUnimplementedLaunchServiceServer()
 }
 
@@ -108,6 +119,9 @@ func (UnimplementedLaunchServiceServer) DeleteLaunch(context.Context, *LaunchDel
 }
 func (UnimplementedLaunchServiceServer) ListLaunch(context.Context, *ListLaunchRequest) (*ListLaunchResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method ListLaunch not implemented")
+}
+func (UnimplementedLaunchServiceServer) GetLaunch(context.Context, *LaunchDetailRequest) (*LaunchDetailResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method GetLaunch not implemented")
 }
 func (UnimplementedLaunchServiceServer) mustEmbedUnimplementedLaunchServiceServer() {}
 
@@ -212,6 +226,24 @@ func _LaunchService_ListLaunch_Handler(srv interface{}, ctx context.Context, dec
 	return interceptor(ctx, in, info, handler)
 }
 
+func _LaunchService_GetLaunch_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(LaunchDetailRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(LaunchServiceServer).GetLaunch(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/launch.LaunchService/GetLaunch",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(LaunchServiceServer).GetLaunch(ctx, req.(*LaunchDetailRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 // LaunchService_ServiceDesc is the grpc.ServiceDesc for LaunchService service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
@@ -238,6 +270,10 @@ var LaunchService_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "ListLaunch",
 			Handler:    _LaunchService_ListLaunch_Handler,
+		},
+		{
+			MethodName: "GetLaunch",
+			Handler:    _LaunchService_GetLaunch_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},

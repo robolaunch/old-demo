@@ -2,6 +2,7 @@ package main
 
 import (
 	"context"
+	"errors"
 	"fmt"
 
 	launchpb "github.com/robolaunch/demo-launch/launch/api/launch"
@@ -60,6 +61,17 @@ func (*server) CreateLaunch(ctx context.Context, req *launchpb.LaunchCreateReque
 
 func (*server) DeleteLaunch(ctx context.Context, req *launchpb.LaunchDeleteRequest) (*launchpb.LaunchResponse, error) {
 	// Username could be used for namespace in this version.
+	headers, _ := metadata.FromIncomingContext(ctx)
+	//Username will be used as a namespace in this version
+
+	//Authorization header check!
+	if headers["authorization"] == nil {
+		return nil, errors.New("auth: authorization header not found")
+	}
+	err := account.CurrentUser(headers["authorization"][0])
+	if err != nil {
+		return nil, err
+	}
 	username := req.GetUsername()
 	// namespace := req.GetLaunch().GetNamespace()
 
@@ -76,7 +88,7 @@ func (*server) DeleteLaunch(ctx context.Context, req *launchpb.LaunchDeleteReque
 		Name:      name,
 		Namespace: username,
 	})
-	err := kubeclient.DeleteDeploymentService(name, username)
+	err = kubeclient.DeleteDeploymentService(name, username)
 	if err != nil {
 		return nil, err
 	}
@@ -91,10 +103,59 @@ func (*server) DeleteLaunch(ctx context.Context, req *launchpb.LaunchDeleteReque
 	}, nil
 }
 
+func (*server) GetLaunch(ctx context.Context, req *launchpb.LaunchDetailRequest) (*launchpb.LaunchDetailResponse, error) {
+	// Check before list Launches
+	headers, _ := metadata.FromIncomingContext(ctx)
+	//Username will be used as a namespace in this version
+
+	//Authorization header check!
+	if headers["authorization"] == nil {
+		return nil, errors.New("auth: authorization header not found")
+	}
+	err := account.CurrentUser(headers["authorization"][0])
+	if err != nil {
+		return nil, err
+	}
+
+	//Filter operation.
+	name := req.GetName()
+	//Namespace username is same in tihs version
+	username := req.GetUsername()
+	// namespace:= req.Namespace()
+
+	//Only read svc would be enough
+	launchSvc, err := kubeclient.GetService(name, username)
+	if err != nil {
+		return nil, err
+	}
+	var nodePort int32
+	// Find webrtc port from deployment
+	for _, port := range launchSvc.Spec.Ports {
+		if port.Name == "http" {
+			nodePort = port.NodePort
+		}
+	}
+	return &launchpb.LaunchDetailResponse{
+		Launch: &launchpb.LaunchDetail{
+			Name:           name,
+			Namespace:      username,
+			RobotType:      "DefaultRobot", // not defined in this version
+			WorkloadStatus: true,           // should be checked from deployment
+			NodeIp:         "23.88.52.37",  // predefined by node affinity
+			NodePort:       nodePort,
+		},
+	}, nil
+}
+
 func (*server) ListLaunch(ctx context.Context, req *launchpb.ListLaunchRequest) (*launchpb.ListLaunchResponse, error) {
 	// Check before list Launches
 	headers, _ := metadata.FromIncomingContext(ctx)
 	//Username will be used as a namespace in this version
+
+	//Authorization header check!
+	if headers["authorization"] == nil {
+		return nil, errors.New("auth: authorization header not found")
+	}
 	username, err := account.CurrentUserWithUsername(headers["authorization"][0])
 	if err != nil {
 		return nil, err

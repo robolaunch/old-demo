@@ -9,6 +9,7 @@ message User {
     string password = 2;
     string email = 3;
     string organization = 4;
+    
 }
 
 message UserCreateRequest {
@@ -31,11 +32,40 @@ message Launch {
     string name = 2;
     string robot_type = 3;
     string namespace = 4;
+    bool workload_status= 5;
+}
+
+message LaunchDetail {
+    string username = 1;
+    string name = 2;
+    string robot_type = 3;
+    string namespace = 4;
+    bool workload_status= 5;
+    string node_ip=6;
+    int32 node_port =7;
+}
+
+message ListLaunchResponse{
+    repeated Launch launches=1;
+}
+
+message ListLaunchRequest{
 }
 
 message LaunchCreateRequest {
     Launch launch = 1;
 }
+
+message LaunchDetailRequest {
+    string username = 1;
+    string name = 2;
+    string namespace = 3;
+}
+
+message LaunchDetailResponse {
+    LaunchDetail launch=1;
+}
+
 
 message LaunchDeleteRequest {
     string username = 1;
@@ -53,5 +83,7 @@ service LaunchService{
     rpc DeleteUser(UserDeleteRequest) returns (UserResponse);
     rpc CreateLaunch(LaunchCreateRequest) returns (LaunchResponse);
     rpc DeleteLaunch(LaunchDeleteRequest) returns (LaunchResponse);
+    rpc ListLaunch(ListLaunchRequest) returns (ListLaunchResponse);
+    rpc GetLaunch(LaunchDetailRequest) returns (LaunchDetailResponse);
 }
 
