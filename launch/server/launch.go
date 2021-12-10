@@ -215,10 +215,51 @@ func (*server) StartLaunch(ctx context.Context, req *launchpb.LaunchDeleteReques
 		return nil, err
 	}
 	if (*deploy.Spec.Replicas) > 0 {
-		err = errors.New("deployment has replicas")
+		err = errors.New("launch has already")
 		return nil, err
 	}
 	replicas := int32(1)
+	deploy.Spec.Replicas = &replicas
+
+	//Update Deployment
+	_, err = kubeclient.UpdateDeployment(username, deploy)
+	if err != nil {
+		log.Fatalf("[StartLaunch]Launch couldn't started\n: %v", err)
+		return nil, err
+
+	}
+	return &launchpb.LaunchResponse{}, nil
+}
+
+func (*server) StopLaunch(ctx context.Context, req *launchpb.LaunchDeleteRequest) (*launchpb.LaunchResponse, error) {
+	// Check before list Launches
+	headers, _ := metadata.FromIncomingContext(ctx)
+	//Username will be used as a namespace in this version
+
+	//Authorization header check!
+	if headers["authorization"] == nil {
+		return nil, errors.New("auth: authorization header not found")
+	}
+	err := account.CurrentUser(headers["authorization"][0])
+	if err != nil {
+		return nil, err
+	}
+
+	name := req.GetName()
+	// namespace := req.GetNamespace()
+	username := req.GetUsername()
+
+	//Get kubernetes deployment
+	deploy, err := kubeclient.GetDeployment(name, username)
+	if err != nil {
+		log.Fatalf("[StartLaunch]Launch couldn't started: %v\n", err)
+		return nil, err
+	}
+	if (*deploy.Spec.Replicas) == 0 {
+		err = errors.New("launch has already stopped")
+		return nil, err
+	}
+	replicas := int32(0)
 	deploy.Spec.Replicas = &replicas
 
 	//Update Deployment
