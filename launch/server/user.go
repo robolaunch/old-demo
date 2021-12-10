@@ -59,7 +59,8 @@ func (*server) CreateUser(ctx context.Context, req *launchpb.UserCreateRequest) 
 }
 
 func (*server) DeleteUser(ctx context.Context, req *launchpb.UserDeleteRequest) (*launchpb.UserResponse, error) {
-	fmt.Println("Triggered call!")
+	//TODO: Authorization should be implemented this endpoint!
+	fmt.Println("Delete operation called by user: username")
 	//Get User information from endpoint.
 	username := req.GetUsername()
 

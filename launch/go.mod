@@ -1,4 +1,4 @@
-module github.com/robolaunch/demo-launch/launch
+module github.com/robolaunch/robolaunch/launch
 
 go 1.17
 

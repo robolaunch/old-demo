@@ -5,10 +5,10 @@ import (
 	"errors"
 	"fmt"
 
-	launchpb "github.com/robolaunch/demo-launch/launch/api/launch"
-	"github.com/robolaunch/demo-launch/launch/pkg/account"
-	"github.com/robolaunch/demo-launch/launch/pkg/kubeclient"
-	"github.com/robolaunch/demo-launch/launch/pkg/persistance"
+	launchpb "github.com/robolaunch/robolaunch/launch/api/launch"
+	"github.com/robolaunch/robolaunch/launch/pkg/account"
+	"github.com/robolaunch/robolaunch/launch/pkg/kubeclient"
+	"github.com/robolaunch/robolaunch/launch/pkg/persistance"
 	"google.golang.org/grpc/metadata"
 )
 
@@ -53,6 +53,8 @@ func (*server) CreateLaunch(ctx context.Context, req *launchpb.LaunchCreateReque
 		fmt.Printf("User couldn't saved: %v", err)
 		return nil, err
 	}
+	fmt.Printf("[CreateLaunch] Completed: %v\n", username)
+
 	return &launchpb.LaunchResponse{
 		IsOk:   true,
 		Launch: req.GetLaunch(),
@@ -92,6 +94,7 @@ func (*server) DeleteLaunch(ctx context.Context, req *launchpb.LaunchDeleteReque
 	if err != nil {
 		return nil, err
 	}
+	fmt.Printf("[DeleteLaunch] Completed: %v\n", username)
 	return &launchpb.LaunchResponse{
 		IsOk: true,
 		Launch: &launchpb.Launch{
@@ -135,6 +138,7 @@ func (*server) GetLaunch(ctx context.Context, req *launchpb.LaunchDetailRequest)
 			nodePort = port.NodePort
 		}
 	}
+
 	return &launchpb.LaunchDetailResponse{
 		Launch: &launchpb.LaunchDetail{
 			Name:           name,
@@ -180,7 +184,7 @@ func (*server) ListLaunch(ctx context.Context, req *launchpb.ListLaunchRequest) 
 			WorkloadStatus: status,
 		})
 	}
-	fmt.Println("Request completed")
+	fmt.Printf("[ListLaunch] Completed: %v\n", username)
 	return &launchpb.ListLaunchResponse{Launches: launches}, nil
 
 }

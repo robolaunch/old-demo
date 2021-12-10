@@ -37,24 +37,22 @@ func DisconnectDb(ctx context.Context) error {
 }
 
 func SaveLaunch(l *Launch) error {
-	res, err := collection.InsertOne(context.Background(), &l)
+	_, err := collection.InsertOne(context.Background(), &l)
 	if err != nil {
 		return err
 	}
-	fmt.Println(res)
 	return nil
 }
 
 // Function will be soft delete! Data will be keeped after change
 func DeleteLaunch(l *Launch) error {
-	fmt.Printf("Username: %v\t Instance Name:%v\n", l.Username, l.Name)
+	fmt.Printf("Username: %v | Instance Name:%v\n", l.Username, l.Name)
 	filter := bson.M{"username": l.Username, "name": l.Name}
 	resLaunch := &Launch{}
 	res := collection.FindOne(context.Background(), filter)
 	if err := res.Decode(resLaunch); err != nil {
 		fmt.Printf("Error happened: %v\n", err)
 	}
-	fmt.Println(resLaunch)
 	resLaunch.Status = false
 	_, err := collection.ReplaceOne(context.Background(), filter, resLaunch)
 	if err != nil {

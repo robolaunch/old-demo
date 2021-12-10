@@ -1,4 +1,4 @@
-module github.com/robolaunch/demo-launch/feedback
+module github.com/robolaunch/robolaunch/feedback
 
 go 1.17
 
