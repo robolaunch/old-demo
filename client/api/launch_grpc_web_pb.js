@@ -375,5 +375,66 @@ proto.launch.LaunchServicePromiseClient.prototype.listLaunch =
 };
 
 
+/**
+ * @const
+ * @type {!grpc.web.MethodDescriptor<
+ *   !proto.launch.LaunchDetailRequest,
+ *   !proto.launch.LaunchDetailResponse>}
+ */
+const methodDescriptor_LaunchService_GetLaunch = new grpc.web.MethodDescriptor(
+  '/launch.LaunchService/GetLaunch',
+  grpc.web.MethodType.UNARY,
+  proto.launch.LaunchDetailRequest,
+  proto.launch.LaunchDetailResponse,
+  /**
+   * @param {!proto.launch.LaunchDetailRequest} request
+   * @return {!Uint8Array}
+   */
+  function(request) {
+    return request.serializeBinary();
+  },
+  proto.launch.LaunchDetailResponse.deserializeBinary
+);
+
+
+/**
+ * @param {!proto.launch.LaunchDetailRequest} request The
+ *     request proto
+ * @param {?Object<string, string>} metadata User defined
+ *     call metadata
+ * @param {function(?grpc.web.RpcError, ?proto.launch.LaunchDetailResponse)}
+ *     callback The callback function(error, response)
+ * @return {!grpc.web.ClientReadableStream<!proto.launch.LaunchDetailResponse>|undefined}
+ *     The XHR Node Readable Stream
+ */
+proto.launch.LaunchServiceClient.prototype.getLaunch =
+    function(request, metadata, callback) {
+  return this.client_.rpcCall(this.hostname_ +
+      '/launch.LaunchService/GetLaunch',
+      request,
+      metadata || {},
+      methodDescriptor_LaunchService_GetLaunch,
+      callback);
+};
+
+
+/**
+ * @param {!proto.launch.LaunchDetailRequest} request The
+ *     request proto
+ * @param {?Object<string, string>=} metadata User defined
+ *     call metadata
+ * @return {!Promise<!proto.launch.LaunchDetailResponse>}
+ *     Promise that resolves to the response
+ */
+proto.launch.LaunchServicePromiseClient.prototype.getLaunch =
+    function(request, metadata) {
+  return this.client_.unaryCall(this.hostname_ +
+      '/launch.LaunchService/GetLaunch',
+      request,
+      metadata || {},
+      methodDescriptor_LaunchService_GetLaunch);
+};
+
+
 module.exports = proto.launch;
 

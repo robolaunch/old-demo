@@ -128,6 +128,48 @@ export namespace Launch {
   }
 }
 
+export class LaunchDetail extends jspb.Message {
+  getUsername(): string;
+  setUsername(value: string): LaunchDetail;
+
+  getName(): string;
+  setName(value: string): LaunchDetail;
+
+  getRobotType(): string;
+  setRobotType(value: string): LaunchDetail;
+
+  getNamespace(): string;
+  setNamespace(value: string): LaunchDetail;
+
+  getWorkloadStatus(): boolean;
+  setWorkloadStatus(value: boolean): LaunchDetail;
+
+  getNodeIp(): string;
+  setNodeIp(value: string): LaunchDetail;
+
+  getNodePort(): number;
+  setNodePort(value: number): LaunchDetail;
+
+  serializeBinary(): Uint8Array;
+  toObject(includeInstance?: boolean): LaunchDetail.AsObject;
+  static toObject(includeInstance: boolean, msg: LaunchDetail): LaunchDetail.AsObject;
+  static serializeBinaryToWriter(message: LaunchDetail, writer: jspb.BinaryWriter): void;
+  static deserializeBinary(bytes: Uint8Array): LaunchDetail;
+  static deserializeBinaryFromReader(message: LaunchDetail, reader: jspb.BinaryReader): LaunchDetail;
+}
+
+export namespace LaunchDetail {
+  export type AsObject = {
+    username: string,
+    name: string,
+    robotType: string,
+    namespace: string,
+    workloadStatus: boolean,
+    nodeIp: string,
+    nodePort: number,
+  }
+}
+
 export class ListLaunchResponse extends jspb.Message {
   getLaunchesList(): Array<Launch>;
   setLaunchesList(value: Array<Launch>): ListLaunchResponse;
@@ -179,6 +221,52 @@ export class LaunchCreateRequest extends jspb.Message {
 export namespace LaunchCreateRequest {
   export type AsObject = {
     launch?: Launch.AsObject,
+  }
+}
+
+export class LaunchDetailRequest extends jspb.Message {
+  getUsername(): string;
+  setUsername(value: string): LaunchDetailRequest;
+
+  getName(): string;
+  setName(value: string): LaunchDetailRequest;
+
+  getNamespace(): string;
+  setNamespace(value: string): LaunchDetailRequest;
+
+  serializeBinary(): Uint8Array;
+  toObject(includeInstance?: boolean): LaunchDetailRequest.AsObject;
+  static toObject(includeInstance: boolean, msg: LaunchDetailRequest): LaunchDetailRequest.AsObject;
+  static serializeBinaryToWriter(message: LaunchDetailRequest, writer: jspb.BinaryWriter): void;
+  static deserializeBinary(bytes: Uint8Array): LaunchDetailRequest;
+  static deserializeBinaryFromReader(message: LaunchDetailRequest, reader: jspb.BinaryReader): LaunchDetailRequest;
+}
+
+export namespace LaunchDetailRequest {
+  export type AsObject = {
+    username: string,
+    name: string,
+    namespace: string,
+  }
+}
+
+export class LaunchDetailResponse extends jspb.Message {
+  getLaunch(): LaunchDetail | undefined;
+  setLaunch(value?: LaunchDetail): LaunchDetailResponse;
+  hasLaunch(): boolean;
+  clearLaunch(): LaunchDetailResponse;
+
+  serializeBinary(): Uint8Array;
+  toObject(includeInstance?: boolean): LaunchDetailResponse.AsObject;
+  static toObject(includeInstance: boolean, msg: LaunchDetailResponse): LaunchDetailResponse.AsObject;
+  static serializeBinaryToWriter(message: LaunchDetailResponse, writer: jspb.BinaryWriter): void;
+  static deserializeBinary(bytes: Uint8Array): LaunchDetailResponse;
+  static deserializeBinaryFromReader(message: LaunchDetailResponse, reader: jspb.BinaryReader): LaunchDetailResponse;
+}
+
+export namespace LaunchDetailResponse {
+  export type AsObject = {
+    launch?: LaunchDetail.AsObject,
   }
 }
 

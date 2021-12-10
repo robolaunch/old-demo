@@ -2,7 +2,12 @@ import { Button } from "@chakra-ui/button";
 import React, { useEffect, useRef, useState } from "react";
 // @ts-ignore
 import GuacamoleKeyboard from "../../utils/guacamole-keyboard.ts";
-const Stream: React.FC = () => {
+interface Props {
+  port: number;
+  ip: string;
+}
+
+const Stream: React.FC<Props> = ({ port, ip }) => {
   const video = useRef<HTMLVideoElement>(null);
   const peer = useRef<any>(null);
   const candidate = useRef<any>(null);
@@ -71,9 +76,7 @@ const Stream: React.FC = () => {
   let buffer: ArrayBuffer;
   let payload: DataView;
   useEffect(() => {
-    client.current = new WebSocket(
-      "ws://159.69.216.106:8081/ws?password=admin"
-    );
+    client.current = new WebSocket(`ws://${ip}:${port}/ws?password=admin`);
     video.current?.focus();
     keyboard.current = GuacamoleKeyboard();
 
@@ -283,6 +286,7 @@ const Stream: React.FC = () => {
           ref={video}
           autoPlay
           muted={muteState}
+          controls={false}
           style={{
             maxWidth: "90%",
             backgroundColor: "#000",
@@ -294,6 +298,14 @@ const Stream: React.FC = () => {
 
         <Button onClick={handleKeyboard}>Connect keyboard</Button>
         <Button onClick={() => video.current?.play()}>Play Mate</Button>
+        <Button
+          onClick={() => {
+            video.current?.requestFullscreen();
+          }}
+        >
+          Fullscreen
+        </Button>
+
         <Button onClick={() => setMuteState(!muteState)}>Mute/Unmute</Button>
       </div>
     </div>

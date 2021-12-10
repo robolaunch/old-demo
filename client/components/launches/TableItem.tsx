@@ -2,6 +2,7 @@ import React from "react";
 import { Th, Tr, Td, Icon } from "@chakra-ui/react";
 import { IoStop, IoPlay } from "react-icons/io5";
 import { AiFillDelete } from "react-icons/ai";
+import NextLink from "next/link";
 
 interface Props {
   status: boolean;
@@ -20,7 +21,10 @@ const TableItem: React.FC<Props> = ({
 }) => {
   return (
     <Tr>
-      <Td>{name}</Td>
+      <NextLink href={`/stream?name=${name}&namespace=${namespace}`}>
+        <Td>{name}</Td>
+      </NextLink>
+
       <Td fontWeight="600" color="gray.500">
         {type}
       </Td>
