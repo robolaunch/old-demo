@@ -7,8 +7,8 @@ import (
 	"net"
 	"os"
 
-	launchpb "github.com/robolaunch/demo-launch/launch/api/launch"
-	"github.com/robolaunch/demo-launch/launch/pkg/persistance"
+	launchpb "github.com/robolaunch/robolaunch/launch/api/launch"
+	"github.com/robolaunch/robolaunch/launch/pkg/persistance"
 	"google.golang.org/grpc"
 )
 

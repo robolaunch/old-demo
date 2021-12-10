@@ -131,6 +131,32 @@ func GetService(name string, namespace string) (*v1ns.Service, error) {
 
 }
 
+func GetDeployment(name string, namespace string) (*deploy.Deployment, error) {
+	client, err := GetKubeClient()
+	if err != nil {
+		return nil, err
+	}
+	deploy, err := client.AppsV1().Deployments(namespace).Get(context.TODO(), name, metav1.GetOptions{})
+	if err != nil {
+		return nil, err
+	}
+	return deploy, err
+
+}
+
+func UpdateDeployment(namespace string, deployment *deploy.Deployment) (*deploy.Deployment, error) {
+	client, err := GetKubeClient()
+	if err != nil {
+		return nil, err
+	}
+	deploy, err := client.AppsV1().Deployments(namespace).Update(context.TODO(), deployment, metav1.UpdateOptions{})
+	if err != nil {
+		return nil, err
+	}
+	return deploy, err
+
+}
+
 func CreateDeploymentService(name string, namespace string) error {
 	client, err := GetKubeClient()
 	if err != nil {

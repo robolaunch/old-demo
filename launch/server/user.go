@@ -4,10 +4,10 @@ import (
 	"context"
 	"fmt"
 
-	launchpb "github.com/robolaunch/demo-launch/launch/api/launch"
+	launchpb "github.com/robolaunch/robolaunch/launch/api/launch"
 
-	"github.com/robolaunch/demo-launch/launch/pkg/account"
-	"github.com/robolaunch/demo-launch/launch/pkg/kubeclient"
+	"github.com/robolaunch/robolaunch/launch/pkg/account"
+	"github.com/robolaunch/robolaunch/launch/pkg/kubeclient"
 )
 
 func (*server) CreateUser(ctx context.Context, req *launchpb.UserCreateRequest) (*launchpb.UserResponse, error) {
