@@ -3,13 +3,27 @@ package feedback;
 option go_package="feedbackpb/api/feedbackpb";
 
 
-message UserRequest {
-    string name=1;
+message Comment {
+    string username=1;
+    string name=2;
+    string comment=3;
+    int32 rating=4;
 }
-message UserResponse {
-    string name=1;
+message CommentRequest {
+    Comment Comment=1;
+}
+message CommentResponse {
 }
 
-service User{
-    rpc Create(UserRequest) returns (UserResponse);
+message ListFeedbackRequest {
+
+}
+
+message ListFeedbackResponse {
+    repeated Comment comment=1;
+}
+
+service Feedback{
+    rpc SendFeedback(CommentRequest) returns (CommentResponse);
+    rpc ListFeedback(ListFeedbackRequest) returns (ListFeedbackResponse);
 }

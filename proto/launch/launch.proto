@@ -85,5 +85,7 @@ service LaunchService{
     rpc DeleteLaunch(LaunchDeleteRequest) returns (LaunchResponse);
     rpc ListLaunch(ListLaunchRequest) returns (ListLaunchResponse);
     rpc GetLaunch(LaunchDetailRequest) returns (LaunchDetailResponse);
+    rpc StartLaunch(LaunchDeleteRequest) returns (LaunchResponse);
+    rpc StopLaunch(LaunchDeleteRequest) returns (LaunchResponse);
 }
 

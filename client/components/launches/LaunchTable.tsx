@@ -86,7 +86,7 @@ const LaunchTable: React.FC = () => {
   };
   return (
     <Box>
-      <CreateLaunch onCreate={()=>getList()} />
+      <CreateLaunch onCreate={() => getList()} />
 
       <Table>
         <Thead>

@@ -14,86 +14,122 @@ import (
 // Requires gRPC-Go v1.32.0 or later.
 const _ = grpc.SupportPackageIsVersion7
 
-// UserClient is the client API for User service.
+// FeedbackClient is the client API for Feedback service.
 //
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://pkg.go.dev/google.golang.org/grpc/?tab=doc#ClientConn.NewStream.
-type UserClient interface {
-	Create(ctx context.Context, in *UserRequest, opts ...grpc.CallOption) (*UserResponse, error)
+type FeedbackClient interface {
+	SendFeedback(ctx context.Context, in *CommentRequest, opts ...grpc.CallOption) (*CommentResponse, error)
+	ListFeedback(ctx context.Context, in *ListFeedbackRequest, opts ...grpc.CallOption) (*ListFeedbackResponse, error)
 }
 
-type userClient struct {
+type feedbackClient struct {
 	cc grpc.ClientConnInterface
 }
 
-func NewUserClient(cc grpc.ClientConnInterface) UserClient {
-	return &userClient{cc}
+func NewFeedbackClient(cc grpc.ClientConnInterface) FeedbackClient {
+	return &feedbackClient{cc}
 }
 
-func (c *userClient) Create(ctx context.Context, in *UserRequest, opts ...grpc.CallOption) (*UserResponse, error) {
-	out := new(UserResponse)
-	err := c.cc.Invoke(ctx, "/feedback.User/Create", in, out, opts...)
+func (c *feedbackClient) SendFeedback(ctx context.Context, in *CommentRequest, opts ...grpc.CallOption) (*CommentResponse, error) {
+	out := new(CommentResponse)
+	err := c.cc.Invoke(ctx, "/feedback.Feedback/SendFeedback", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
 	return out, nil
 }
 
-// UserServer is the server API for User service.
-// All implementations must embed UnimplementedUserServer
+func (c *feedbackClient) ListFeedback(ctx context.Context, in *ListFeedbackRequest, opts ...grpc.CallOption) (*ListFeedbackResponse, error) {
+	out := new(ListFeedbackResponse)
+	err := c.cc.Invoke(ctx, "/feedback.Feedback/ListFeedback", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+// FeedbackServer is the server API for Feedback service.
+// All implementations must embed UnimplementedFeedbackServer
 // for forward compatibility
-type UserServer interface {
-	Create(context.Context, *UserRequest) (*UserResponse, error)
-	mustEmbedUnimplementedUserServer()
+type FeedbackServer interface {
+	SendFeedback(context.Context, *CommentRequest) (*CommentResponse, error)
+	ListFeedback(context.Context, *ListFeedbackRequest) (*ListFeedbackResponse, error)
+	mustEmbedUnimplementedFeedbackServer()
 }
 
-// UnimplementedUserServer must be embedded to have forward compatible implementations.
-type UnimplementedUserServer struct {
+// UnimplementedFeedbackServer must be embedded to have forward compatible implementations.
+type UnimplementedFeedbackServer struct {
 }
 
-func (UnimplementedUserServer) Create(context.Context, *UserRequest) (*UserResponse, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method Create not implemented")
+func (UnimplementedFeedbackServer) SendFeedback(context.Context, *CommentRequest) (*CommentResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method SendFeedback not implemented")
 }
-func (UnimplementedUserServer) mustEmbedUnimplementedUserServer() {}
+func (UnimplementedFeedbackServer) ListFeedback(context.Context, *ListFeedbackRequest) (*ListFeedbackResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method ListFeedback not implemented")
+}
+func (UnimplementedFeedbackServer) mustEmbedUnimplementedFeedbackServer() {}
 
-// UnsafeUserServer may be embedded to opt out of forward compatibility for this service.
-// Use of this interface is not recommended, as added methods to UserServer will
+// UnsafeFeedbackServer may be embedded to opt out of forward compatibility for this service.
+// Use of this interface is not recommended, as added methods to FeedbackServer will
 // result in compilation errors.
-type UnsafeUserServer interface {
-	mustEmbedUnimplementedUserServer()
+type UnsafeFeedbackServer interface {
+	mustEmbedUnimplementedFeedbackServer()
 }
 
-func RegisterUserServer(s grpc.ServiceRegistrar, srv UserServer) {
-	s.RegisterService(&User_ServiceDesc, srv)
+func RegisterFeedbackServer(s grpc.ServiceRegistrar, srv FeedbackServer) {
+	s.RegisterService(&Feedback_ServiceDesc, srv)
 }
 
-func _User_Create_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(UserRequest)
+func _Feedback_SendFeedback_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(CommentRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
 	if interceptor == nil {
-		return srv.(UserServer).Create(ctx, in)
+		return srv.(FeedbackServer).SendFeedback(ctx, in)
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: "/feedback.User/Create",
+		FullMethod: "/feedback.Feedback/SendFeedback",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(UserServer).Create(ctx, req.(*UserRequest))
+		return srv.(FeedbackServer).SendFeedback(ctx, req.(*CommentRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
 
-// User_ServiceDesc is the grpc.ServiceDesc for User service.
+func _Feedback_ListFeedback_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(ListFeedbackRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(FeedbackServer).ListFeedback(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/feedback.Feedback/ListFeedback",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(FeedbackServer).ListFeedback(ctx, req.(*ListFeedbackRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+// Feedback_ServiceDesc is the grpc.ServiceDesc for Feedback service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
-var User_ServiceDesc = grpc.ServiceDesc{
-	ServiceName: "feedback.User",
-	HandlerType: (*UserServer)(nil),
+var Feedback_ServiceDesc = grpc.ServiceDesc{
+	ServiceName: "feedback.Feedback",
+	HandlerType: (*FeedbackServer)(nil),
 	Methods: []grpc.MethodDesc{
 		{
-			MethodName: "Create",
-			Handler:    _User_Create_Handler,
+			MethodName: "SendFeedback",
+			Handler:    _Feedback_SendFeedback_Handler,
+		},
+		{
+			MethodName: "ListFeedback",
+			Handler:    _Feedback_ListFeedback_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},

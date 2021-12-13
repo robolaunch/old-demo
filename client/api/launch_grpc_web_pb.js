@@ -436,5 +436,127 @@ proto.launch.LaunchServicePromiseClient.prototype.getLaunch =
 };
 
 
+/**
+ * @const
+ * @type {!grpc.web.MethodDescriptor<
+ *   !proto.launch.LaunchDeleteRequest,
+ *   !proto.launch.LaunchResponse>}
+ */
+const methodDescriptor_LaunchService_StartLaunch = new grpc.web.MethodDescriptor(
+  '/launch.LaunchService/StartLaunch',
+  grpc.web.MethodType.UNARY,
+  proto.launch.LaunchDeleteRequest,
+  proto.launch.LaunchResponse,
+  /**
+   * @param {!proto.launch.LaunchDeleteRequest} request
+   * @return {!Uint8Array}
+   */
+  function(request) {
+    return request.serializeBinary();
+  },
+  proto.launch.LaunchResponse.deserializeBinary
+);
+
+
+/**
+ * @param {!proto.launch.LaunchDeleteRequest} request The
+ *     request proto
+ * @param {?Object<string, string>} metadata User defined
+ *     call metadata
+ * @param {function(?grpc.web.RpcError, ?proto.launch.LaunchResponse)}
+ *     callback The callback function(error, response)
+ * @return {!grpc.web.ClientReadableStream<!proto.launch.LaunchResponse>|undefined}
+ *     The XHR Node Readable Stream
+ */
+proto.launch.LaunchServiceClient.prototype.startLaunch =
+    function(request, metadata, callback) {
+  return this.client_.rpcCall(this.hostname_ +
+      '/launch.LaunchService/StartLaunch',
+      request,
+      metadata || {},
+      methodDescriptor_LaunchService_StartLaunch,
+      callback);
+};
+
+
+/**
+ * @param {!proto.launch.LaunchDeleteRequest} request The
+ *     request proto
+ * @param {?Object<string, string>=} metadata User defined
+ *     call metadata
+ * @return {!Promise<!proto.launch.LaunchResponse>}
+ *     Promise that resolves to the response
+ */
+proto.launch.LaunchServicePromiseClient.prototype.startLaunch =
+    function(request, metadata) {
+  return this.client_.unaryCall(this.hostname_ +
+      '/launch.LaunchService/StartLaunch',
+      request,
+      metadata || {},
+      methodDescriptor_LaunchService_StartLaunch);
+};
+
+
+/**
+ * @const
+ * @type {!grpc.web.MethodDescriptor<
+ *   !proto.launch.LaunchDeleteRequest,
+ *   !proto.launch.LaunchResponse>}
+ */
+const methodDescriptor_LaunchService_StopLaunch = new grpc.web.MethodDescriptor(
+  '/launch.LaunchService/StopLaunch',
+  grpc.web.MethodType.UNARY,
+  proto.launch.LaunchDeleteRequest,
+  proto.launch.LaunchResponse,
+  /**
+   * @param {!proto.launch.LaunchDeleteRequest} request
+   * @return {!Uint8Array}
+   */
+  function(request) {
+    return request.serializeBinary();
+  },
+  proto.launch.LaunchResponse.deserializeBinary
+);
+
+
+/**
+ * @param {!proto.launch.LaunchDeleteRequest} request The
+ *     request proto
+ * @param {?Object<string, string>} metadata User defined
+ *     call metadata
+ * @param {function(?grpc.web.RpcError, ?proto.launch.LaunchResponse)}
+ *     callback The callback function(error, response)
+ * @return {!grpc.web.ClientReadableStream<!proto.launch.LaunchResponse>|undefined}
+ *     The XHR Node Readable Stream
+ */
+proto.launch.LaunchServiceClient.prototype.stopLaunch =
+    function(request, metadata, callback) {
+  return this.client_.rpcCall(this.hostname_ +
+      '/launch.LaunchService/StopLaunch',
+      request,
+      metadata || {},
+      methodDescriptor_LaunchService_StopLaunch,
+      callback);
+};
+
+
+/**
+ * @param {!proto.launch.LaunchDeleteRequest} request The
+ *     request proto
+ * @param {?Object<string, string>=} metadata User defined
+ *     call metadata
+ * @return {!Promise<!proto.launch.LaunchResponse>}
+ *     Promise that resolves to the response
+ */
+proto.launch.LaunchServicePromiseClient.prototype.stopLaunch =
+    function(request, metadata) {
+  return this.client_.unaryCall(this.hostname_ +
+      '/launch.LaunchService/StopLaunch',
+      request,
+      metadata || {},
+      methodDescriptor_LaunchService_StopLaunch);
+};
+
+
 module.exports = proto.launch;
 
