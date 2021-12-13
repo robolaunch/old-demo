@@ -18,8 +18,8 @@ import {
   Icon,
 } from "@chakra-ui/react";
 import { IoAdd, IoSend, IoCheckmarkCircle } from "react-icons/io5";
-import { Launch, LaunchCreateRequest } from "../../api/launch_pb";
-import { LaunchServiceClient } from "../../api/launch_grpc_web_pb";
+import { Launch, LaunchCreateRequest } from "../../api/launch/launch_pb";
+import { LaunchServiceClient } from "../../api/launch/launch_grpc_web_pb";
 import getConfig from "next/config";
 import { useKeycloak } from "@react-keycloak/ssr";
 import { KeycloakInstance } from "keycloak-js";

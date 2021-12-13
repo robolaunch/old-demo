@@ -9,8 +9,8 @@ import {
   User,
   LaunchCreateRequest,
   Launch,
-} from "../api/launch_pb";
-import { LaunchServiceClient } from "../api/launch_grpc_web_pb";
+} from "../api/launch/launch_pb";
+import { LaunchServiceClient } from "../api/launch/launch_grpc_web_pb";
 import { useKeycloak } from "@react-keycloak/ssr";
 import { KeycloakInstance } from "keycloak-js";
 import { useEffect } from "react";

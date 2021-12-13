@@ -14,122 +14,122 @@ import (
 // Requires gRPC-Go v1.32.0 or later.
 const _ = grpc.SupportPackageIsVersion7
 
-// FeedbackClient is the client API for Feedback service.
+// FeedbackServiceClient is the client API for FeedbackService service.
 //
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://pkg.go.dev/google.golang.org/grpc/?tab=doc#ClientConn.NewStream.
-type FeedbackClient interface {
+type FeedbackServiceClient interface {
 	SendFeedback(ctx context.Context, in *CommentRequest, opts ...grpc.CallOption) (*CommentResponse, error)
 	ListFeedback(ctx context.Context, in *ListFeedbackRequest, opts ...grpc.CallOption) (*ListFeedbackResponse, error)
 }
 
-type feedbackClient struct {
+type feedbackServiceClient struct {
 	cc grpc.ClientConnInterface
 }
 
-func NewFeedbackClient(cc grpc.ClientConnInterface) FeedbackClient {
-	return &feedbackClient{cc}
+func NewFeedbackServiceClient(cc grpc.ClientConnInterface) FeedbackServiceClient {
+	return &feedbackServiceClient{cc}
 }
 
-func (c *feedbackClient) SendFeedback(ctx context.Context, in *CommentRequest, opts ...grpc.CallOption) (*CommentResponse, error) {
+func (c *feedbackServiceClient) SendFeedback(ctx context.Context, in *CommentRequest, opts ...grpc.CallOption) (*CommentResponse, error) {
 	out := new(CommentResponse)
-	err := c.cc.Invoke(ctx, "/feedback.Feedback/SendFeedback", in, out, opts...)
+	err := c.cc.Invoke(ctx, "/feedback.FeedbackService/SendFeedback", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
 	return out, nil
 }
 
-func (c *feedbackClient) ListFeedback(ctx context.Context, in *ListFeedbackRequest, opts ...grpc.CallOption) (*ListFeedbackResponse, error) {
+func (c *feedbackServiceClient) ListFeedback(ctx context.Context, in *ListFeedbackRequest, opts ...grpc.CallOption) (*ListFeedbackResponse, error) {
 	out := new(ListFeedbackResponse)
-	err := c.cc.Invoke(ctx, "/feedback.Feedback/ListFeedback", in, out, opts...)
+	err := c.cc.Invoke(ctx, "/feedback.FeedbackService/ListFeedback", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
 	return out, nil
 }
 
-// FeedbackServer is the server API for Feedback service.
-// All implementations must embed UnimplementedFeedbackServer
+// FeedbackServiceServer is the server API for FeedbackService service.
+// All implementations must embed UnimplementedFeedbackServiceServer
 // for forward compatibility
-type FeedbackServer interface {
+type FeedbackServiceServer interface {
 	SendFeedback(context.Context, *CommentRequest) (*CommentResponse, error)
 	ListFeedback(context.Context, *ListFeedbackRequest) (*ListFeedbackResponse, error)
-	mustEmbedUnimplementedFeedbackServer()
+	mustEmbedUnimplementedFeedbackServiceServer()
 }
 
-// UnimplementedFeedbackServer must be embedded to have forward compatible implementations.
-type UnimplementedFeedbackServer struct {
+// UnimplementedFeedbackServiceServer must be embedded to have forward compatible implementations.
+type UnimplementedFeedbackServiceServer struct {
 }
 
-func (UnimplementedFeedbackServer) SendFeedback(context.Context, *CommentRequest) (*CommentResponse, error) {
+func (UnimplementedFeedbackServiceServer) SendFeedback(context.Context, *CommentRequest) (*CommentResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method SendFeedback not implemented")
 }
-func (UnimplementedFeedbackServer) ListFeedback(context.Context, *ListFeedbackRequest) (*ListFeedbackResponse, error) {
+func (UnimplementedFeedbackServiceServer) ListFeedback(context.Context, *ListFeedbackRequest) (*ListFeedbackResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method ListFeedback not implemented")
 }
-func (UnimplementedFeedbackServer) mustEmbedUnimplementedFeedbackServer() {}
+func (UnimplementedFeedbackServiceServer) mustEmbedUnimplementedFeedbackServiceServer() {}
 
-// UnsafeFeedbackServer may be embedded to opt out of forward compatibility for this service.
-// Use of this interface is not recommended, as added methods to FeedbackServer will
+// UnsafeFeedbackServiceServer may be embedded to opt out of forward compatibility for this service.
+// Use of this interface is not recommended, as added methods to FeedbackServiceServer will
 // result in compilation errors.
-type UnsafeFeedbackServer interface {
-	mustEmbedUnimplementedFeedbackServer()
+type UnsafeFeedbackServiceServer interface {
+	mustEmbedUnimplementedFeedbackServiceServer()
 }
 
-func RegisterFeedbackServer(s grpc.ServiceRegistrar, srv FeedbackServer) {
-	s.RegisterService(&Feedback_ServiceDesc, srv)
+func RegisterFeedbackServiceServer(s grpc.ServiceRegistrar, srv FeedbackServiceServer) {
+	s.RegisterService(&FeedbackService_ServiceDesc, srv)
 }
 
-func _Feedback_SendFeedback_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+func _FeedbackService_SendFeedback_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
 	in := new(CommentRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
 	if interceptor == nil {
-		return srv.(FeedbackServer).SendFeedback(ctx, in)
+		return srv.(FeedbackServiceServer).SendFeedback(ctx, in)
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: "/feedback.Feedback/SendFeedback",
+		FullMethod: "/feedback.FeedbackService/SendFeedback",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(FeedbackServer).SendFeedback(ctx, req.(*CommentRequest))
+		return srv.(FeedbackServiceServer).SendFeedback(ctx, req.(*CommentRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
 
-func _Feedback_ListFeedback_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+func _FeedbackService_ListFeedback_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
 	in := new(ListFeedbackRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
 	if interceptor == nil {
-		return srv.(FeedbackServer).ListFeedback(ctx, in)
+		return srv.(FeedbackServiceServer).ListFeedback(ctx, in)
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: "/feedback.Feedback/ListFeedback",
+		FullMethod: "/feedback.FeedbackService/ListFeedback",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(FeedbackServer).ListFeedback(ctx, req.(*ListFeedbackRequest))
+		return srv.(FeedbackServiceServer).ListFeedback(ctx, req.(*ListFeedbackRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
 
-// Feedback_ServiceDesc is the grpc.ServiceDesc for Feedback service.
+// FeedbackService_ServiceDesc is the grpc.ServiceDesc for FeedbackService service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
-var Feedback_ServiceDesc = grpc.ServiceDesc{
-	ServiceName: "feedback.Feedback",
-	HandlerType: (*FeedbackServer)(nil),
+var FeedbackService_ServiceDesc = grpc.ServiceDesc{
+	ServiceName: "feedback.FeedbackService",
+	HandlerType: (*FeedbackServiceServer)(nil),
 	Methods: []grpc.MethodDesc{
 		{
 			MethodName: "SendFeedback",
-			Handler:    _Feedback_SendFeedback_Handler,
+			Handler:    _FeedbackService_SendFeedback_Handler,
 		},
 		{
 			MethodName: "ListFeedback",
-			Handler:    _Feedback_ListFeedback_Handler,
+			Handler:    _FeedbackService_ListFeedback_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},

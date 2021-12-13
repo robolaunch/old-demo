@@ -23,7 +23,7 @@ message ListFeedbackResponse {
     repeated Comment comment=1;
 }
 
-service Feedback{
+service FeedbackService{
     rpc SendFeedback(CommentRequest) returns (CommentResponse);
     rpc ListFeedback(ListFeedbackRequest) returns (ListFeedbackResponse);
 }

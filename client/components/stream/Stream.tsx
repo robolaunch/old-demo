@@ -61,7 +61,6 @@ const Stream: React.FC<Props> = ({ port, ip }) => {
   const handleKeyboard = () => {
     if (!controlReq.current) {
       overlay.current?.focus();
-      console.log("heey");
       client.current.send(JSON.stringify({ event: "control/request" }));
       controlReq.current = true;
     }

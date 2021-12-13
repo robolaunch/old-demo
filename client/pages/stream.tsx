@@ -4,9 +4,10 @@ import { KeycloakInstance } from "keycloak-js";
 import { NextPage } from "next";
 import getConfig from "next/config";
 import { useEffect, useState } from "react";
-import { LaunchServiceClient } from "../api/launch_grpc_web_pb";
-import { LaunchDetailRequest } from "../api/launch_pb";
+import { LaunchServiceClient } from "../api/launch/launch_grpc_web_pb";
+import { LaunchDetailRequest } from "../api/launch/launch_pb";
 import withAuth from "../components/auth/withAuth";
+import SendFeedback from "../components/feedback/SendFeedback";
 import Stream from "../components/stream/Stream";
 
 const StreamPage: NextPage = () => {
@@ -49,10 +50,13 @@ const StreamPage: NextPage = () => {
   }, []);
   return (
     <>
-      {port === 0 || ip === "" ? (
+      {port === 0 || ip === "" || !name || !namespace ? (
         <Text>Wait for it...</Text>
       ) : (
-        <Stream port={port} ip={ip} />
+        <>
+          <Stream port={port} ip={ip} />
+          <SendFeedback username={namespace} name={name} />
+        </>
       )}
     </>
   );

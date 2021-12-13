@@ -3,6 +3,7 @@ import { Th, Tr, Td, Icon } from "@chakra-ui/react";
 import { IoStop, IoPlay } from "react-icons/io5";
 import { AiFillDelete } from "react-icons/ai";
 import NextLink from "next/link";
+import SendFeedback from "../feedback/SendFeedback";
 
 interface Props {
   status: boolean;
@@ -41,6 +42,9 @@ const TableItem: React.FC<Props> = ({
           _hover={{ color: "red.500" }}
           onClick={onDelete}
         />
+      </Td>
+      <Td>
+        <SendFeedback username={namespace} name={name} />
       </Td>
     </Tr>
   );

@@ -18,13 +18,13 @@ import { IoStop, IoPlay } from "react-icons/io5";
 import CreateLaunch from "./CreateLaunch";
 import TableItem from "./TableItem";
 import getConfig from "next/config";
-import { LaunchServiceClient } from "../../api/launch_grpc_web_pb";
+import { LaunchServiceClient } from "../../api/launch/launch_grpc_web_pb";
 import {
   Launch,
   LaunchDeleteRequest,
   ListLaunchRequest,
   ListLaunchResponse,
-} from "../../api/launch_pb";
+} from "../../api/launch/launch_pb";
 import { useKeycloak } from "@react-keycloak/ssr";
 import { KeycloakInstance } from "keycloak-js";
 
@@ -93,6 +93,7 @@ const LaunchTable: React.FC = () => {
           <Th>Name</Th>
           <Th>Type</Th>
           <Th>Namespace</Th>
+          <Th></Th>
           <Th></Th>
           <Th></Th>
         </Thead>
