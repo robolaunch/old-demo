@@ -16,8 +16,8 @@ type Feedback struct {
 	ID       primitive.ObjectID `bson:"_id,omitempty"`
 	Username string             `bson:"username"`
 	Name     string             `bson:"name"`
-	Comment  string             `bson:"namespace"`
-	Point    int32              `bson:"status"`
+	Comment  string             `bson:"comment"`
+	Rating   int32              `bson:"rating"`
 }
 
 func CreateDbConnection(ctx context.Context, connectionString string, dbName string, collectionName string) error {
@@ -39,6 +39,26 @@ func SaveFeedback(l *Feedback) error {
 		return err
 	}
 	return nil
+}
+
+func ListFeedback() ([]*Feedback, error) {
+	feedList := []*Feedback{}
+	cur, err := collection.Find(context.Background(), primitive.D{{}})
+	if err != nil {
+		fmt.Println("find error", err)
+		return nil, err
+	}
+	defer cur.Close(context.Background())
+
+	for cur.Next(context.Background()) {
+		data := &Feedback{}
+		err := cur.Decode(data)
+		if err != nil {
+			return nil, err
+		}
+		feedList = append(feedList, data)
+	}
+	return feedList, err
 }
 
 // Function will be soft delete! Data will be keeped after change
