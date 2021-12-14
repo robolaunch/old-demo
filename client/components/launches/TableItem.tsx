@@ -30,6 +30,10 @@ const TableItem: React.FC<Props> = ({
         {type}
       </Td>
       <Td>{namespace}</Td>
+      <NextLink href={`/ide?name=${name}&namespace=${namespace}`}>
+        <Td>IDE</Td>
+      </NextLink>
+
       <Td>
         <Icon
           as={status ? IoStop : IoPlay}
@@ -42,9 +46,6 @@ const TableItem: React.FC<Props> = ({
           _hover={{ color: "red.500" }}
           onClick={onDelete}
         />
-      </Td>
-      <Td>
-        <SendFeedback username={namespace} name={name} />
       </Td>
     </Tr>
   );

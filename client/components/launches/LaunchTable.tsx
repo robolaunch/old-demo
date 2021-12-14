@@ -93,8 +93,9 @@ const LaunchTable: React.FC = () => {
           <Th>Name</Th>
           <Th>Type</Th>
           <Th>Namespace</Th>
+          <Th>Ide</Th>
           <Th></Th>
-          <Th></Th>
+
           <Th></Th>
         </Thead>
         <Tbody>
