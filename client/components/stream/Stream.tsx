@@ -1,4 +1,5 @@
 import { Button } from "@chakra-ui/button";
+import { background, position } from "@chakra-ui/react";
 import React, { useEffect, useRef, useState } from "react";
 // @ts-ignore
 import GuacamoleKeyboard from "../../utils/guacamole-keyboard.ts";
@@ -14,7 +15,8 @@ const Stream: React.FC<Props> = ({ port, ip }) => {
   const channel = useRef<any>(null);
   const controlReq = useRef<any>(false);
   const client = useRef<any>(null);
-  const overlay = useRef<HTMLDivElement>(null);
+  const overlay = useRef<any>();
+
   const keyboard = useRef<any>(null);
   const [muteState, setMuteState] = useState(true);
   const onTrack = (event: RTCTrackEvent) => {
@@ -78,7 +80,6 @@ const Stream: React.FC<Props> = ({ port, ip }) => {
     client.current = new WebSocket(`ws://${ip}:${port}/ws?password=admin`);
     video.current?.focus();
     keyboard.current = GuacamoleKeyboard();
-
     keyboard.current.onkeydown = (key: number) => {
       console.log(key);
       buffer = new ArrayBuffer(11);
@@ -87,9 +88,12 @@ const Stream: React.FC<Props> = ({ port, ip }) => {
       payload.setUint16(1, 8, true);
       payload.setBigUint64(3, BigInt(key), true);
       console.log(typeof buffer);
-      if (typeof buffer !== "undefined") {
+      if (
+        typeof buffer !== "undefined" &&
+        channel.current!.readyState === "open"
+      ) {
+        console.log(channel.current.readyState, "READY STATE");
         channel.current!.send(buffer);
-        console.log("sended with gua!");
       }
     };
 
@@ -104,8 +108,8 @@ const Stream: React.FC<Props> = ({ port, ip }) => {
         console.log("cancelled with gua!");
       }
     };
-    keyboard.current.listenTo(window);
-
+    keyboard.current.listenTo(overlay.current);
+    overlay.current.liste;
     video.current?.addEventListener("mousemove", (key) => {
       // 0x01;
       if (typeof video.current === "undefined") return;
@@ -125,20 +129,33 @@ const Stream: React.FC<Props> = ({ port, ip }) => {
           Math.round((1080 / rect.height) * (key.clientY - rect.top)),
           true
         );
-        if (typeof buffer !== "undefined") {
+        if (
+          typeof buffer !== "undefined" &&
+          channel.current.readyState === "open"
+        ) {
           channel.current!.send(buffer);
         }
       }
     });
+    video.current?.addEventListener("mouseenter", () => {
+      overlay.current!.focus();
+    });
     video.current?.addEventListener("mousedown", (key) => {
       // 0x01;
+      // overlay.current!.focus();
+      // console.log;
+      key.preventDefault();
+      overlay.current!.focus();
       if (controlReq) {
         buffer = new ArrayBuffer(11);
         payload = new DataView(buffer);
         payload.setUint8(0, 0x03);
         payload.setUint16(1, 8, true);
         payload.setBigUint64(3, BigInt(key.button + 1), true);
-        if (typeof buffer !== "undefined") {
+        if (
+          typeof buffer !== "undefined" &&
+          channel.current.readyState === "open"
+        ) {
           channel.current!.send(buffer);
           console.log("cancelled!");
         }
@@ -153,7 +170,10 @@ const Stream: React.FC<Props> = ({ port, ip }) => {
         payload.setUint16(1, 4, true);
         payload.setInt16(3, key.deltaX / -100, true);
         payload.setInt16(5, key.deltaY / -100, true);
-        if (typeof buffer !== "undefined") {
+        if (
+          typeof buffer !== "undefined" &&
+          channel.current.readyState === "open"
+        ) {
           channel.current!.send(buffer);
           console.log("cancelled!");
         }
@@ -168,7 +188,10 @@ const Stream: React.FC<Props> = ({ port, ip }) => {
         payload.setUint8(0, 0x04);
         payload.setUint16(1, 8, true);
         payload.setBigUint64(3, BigInt(key.button + 1), true);
-        if (typeof buffer !== "undefined") {
+        if (
+          typeof buffer !== "undefined" &&
+          channel.current.readyState === "open"
+        ) {
           channel.current!.send(buffer);
           console.log("cancelled!");
         }
@@ -261,6 +284,8 @@ const Stream: React.FC<Props> = ({ port, ip }) => {
     };
     return () => {
       client.current.close();
+      keyboard.current.reset();
+      // document.removeEventListener()
     };
   }, []);
 
@@ -287,6 +312,7 @@ const Stream: React.FC<Props> = ({ port, ip }) => {
           muted={muteState}
           controls={false}
           style={{
+            cursor: "none",
             maxWidth: "90%",
             backgroundColor: "#000",
           }}
@@ -304,8 +330,26 @@ const Stream: React.FC<Props> = ({ port, ip }) => {
         >
           Fullscreen
         </Button>
-
+        <Button
+          onClick={() => {
+            overlay.current!.focus();
+          }}
+        >
+          focus
+        </Button>
         <Button onClick={() => setMuteState(!muteState)}>Mute/Unmute</Button>
+        <div
+          style={{
+            height: "100%",
+            width: "100%",
+            top: 0,
+
+            position: "absolute",
+            zIndex: "-1",
+          }}
+          ref={overlay}
+          tabIndex={1}
+        ></div>
       </div>
     </div>
   );

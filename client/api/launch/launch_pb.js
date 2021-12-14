@@ -1041,7 +1041,8 @@ proto.launch.LaunchDetail.toObject = function(includeInstance, msg) {
     namespace: jspb.Message.getFieldWithDefault(msg, 4, ""),
     workloadStatus: jspb.Message.getFieldWithDefault(msg, 5, false),
     nodeIp: jspb.Message.getFieldWithDefault(msg, 6, ""),
-    nodePort: jspb.Message.getFieldWithDefault(msg, 7, 0)
+    nodePort: jspb.Message.getFieldWithDefault(msg, 7, 0),
+    theiaPort: jspb.Message.getFieldWithDefault(msg, 8, 0)
   };
 
   if (includeInstance) {
@@ -1105,6 +1106,10 @@ proto.launch.LaunchDetail.deserializeBinaryFromReader = function(msg, reader) {
     case 7:
       var value = /** @type {number} */ (reader.readInt32());
       msg.setNodePort(value);
+      break;
+    case 8:
+      var value = /** @type {number} */ (reader.readInt32());
+      msg.setTheiaPort(value);
       break;
     default:
       reader.skipField();
@@ -1181,6 +1186,13 @@ proto.launch.LaunchDetail.serializeBinaryToWriter = function(message, writer) {
   if (f !== 0) {
     writer.writeInt32(
       7,
+      f
+    );
+  }
+  f = message.getTheiaPort();
+  if (f !== 0) {
+    writer.writeInt32(
+      8,
       f
     );
   }
@@ -1291,6 +1303,21 @@ proto.launch.LaunchDetail.prototype.getNodePort = function() {
 /** @param {number} value */
 proto.launch.LaunchDetail.prototype.setNodePort = function(value) {
   jspb.Message.setProto3IntField(this, 7, value);
+};
+
+
+/**
+ * optional int32 theia_port = 8;
+ * @return {number}
+ */
+proto.launch.LaunchDetail.prototype.getTheiaPort = function() {
+  return /** @type {number} */ (jspb.Message.getFieldWithDefault(this, 8, 0));
+};
+
+
+/** @param {number} value */
+proto.launch.LaunchDetail.prototype.setTheiaPort = function(value) {
+  jspb.Message.setProto3IntField(this, 8, value);
 };
 
 

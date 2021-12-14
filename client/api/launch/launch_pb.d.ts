@@ -150,6 +150,9 @@ export class LaunchDetail extends jspb.Message {
   getNodePort(): number;
   setNodePort(value: number): LaunchDetail;
 
+  getTheiaPort(): number;
+  setTheiaPort(value: number): LaunchDetail;
+
   serializeBinary(): Uint8Array;
   toObject(includeInstance?: boolean): LaunchDetail.AsObject;
   static toObject(includeInstance: boolean, msg: LaunchDetail): LaunchDetail.AsObject;
@@ -167,6 +170,7 @@ export namespace LaunchDetail {
     workloadStatus: boolean,
     nodeIp: string,
     nodePort: number,
+    theiaPort: number,
   }
 }
 
