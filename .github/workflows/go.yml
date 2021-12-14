@@ -1,0 +1,40 @@
+name: Go
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - name: Set up Go
+        uses: actions/setup-go@v2
+        with:
+          go-version: 1.17
+      - name: Build Feedback Service
+        run: cd feedback;go build -o feedback ./server
+      - name: Build Launch Service
+        run: cd launch;go build -o launch ./server
+      - name: Login Docker Registery
+        uses: docker/login-action@v1
+        with:
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
+      - name: Build Feedback Service
+        uses: docker/build-push-action@v2
+        with:
+          context: .
+          file: ./feedback/Dockerfile
+          push: true
+          tags: enginsgungor/feedback:latest
+      - name: Build Launch Service
+        uses: docker/build-push-action@v2
+        with:
+          context: .
+          file: ./feedback/Dockerfile
+          push: true
+          tags: enginsgungor/launch:latest
