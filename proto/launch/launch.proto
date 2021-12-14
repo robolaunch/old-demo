@@ -43,6 +43,7 @@ message LaunchDetail {
     bool workload_status= 5;
     string node_ip=6;
     int32 node_port =7;
+    int32 theia_port= 8;
 }
 
 message ListLaunchResponse{

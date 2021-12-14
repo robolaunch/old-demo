@@ -133,10 +133,16 @@ func (*server) GetLaunch(ctx context.Context, req *launchpb.LaunchDetailRequest)
 		return nil, err
 	}
 	var nodePort int32
+	var theiaPort int32
+
 	// Find webrtc port from deployment
 	for _, port := range launchSvc.Spec.Ports {
 		if port.Name == "http" {
 			nodePort = port.NodePort
+		}
+		if port.Name == "theia" {
+			theiaPort = port.NodePort
+
 		}
 	}
 
@@ -148,6 +154,7 @@ func (*server) GetLaunch(ctx context.Context, req *launchpb.LaunchDetailRequest)
 			WorkloadStatus: true,           // should be checked from deployment
 			NodeIp:         "23.88.52.37",  // predefined by node affinity
 			NodePort:       nodePort,
+			TheiaPort:      theiaPort,
 		},
 	}, nil
 }

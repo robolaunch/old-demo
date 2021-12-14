@@ -191,6 +191,12 @@ func CreateDeploymentService(name string, namespace string) error {
 					Name:       "neko-webrtc",
 					TargetPort: intstr.FromInt(31555),
 				},
+				{
+					Protocol:   v1ns.ProtocolTCP,
+					Port:       3000,
+					Name:       "theia",
+					TargetPort: intstr.FromInt(3000),
+				},
 			},
 		},
 	}
@@ -263,6 +269,20 @@ func CreateDeploymentService(name string, namespace string) error {
 								{Name: "NEKO_EPR", Value: strconv.Itoa(int(udpPort)) + "-" + strconv.Itoa(int(udpPort))},
 								{Name: "NEKO_ICELITE", Value: "1"},
 								{Name: "NEKO_SCREEN", Value: "1920x1080@30"},
+							},
+						},
+						{
+
+							Name:  "theia",
+							Image: "theiaide/theia:next",
+							Stdin: true,
+							TTY:   true,
+							Ports: []v1ns.ContainerPort{
+								{
+									Name:          "theia",
+									ContainerPort: 3000,
+									Protocol:      v1ns.ProtocolTCP,
+								},
 							},
 						},
 					},

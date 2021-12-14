@@ -50,7 +50,7 @@ static_resources:
                       routes:
                         - match: { prefix: "/" }
                           route:
-                            cluster: feedback-service
+                            cluster: feedback_service
                             max_stream_duration:
                               grpc_timeout_header_max: 0s
                       cors:
@@ -79,7 +79,7 @@ static_resources:
                     socket_address:
                       address: 0.0.0.0
                       port_value: 50051
-    - name: feedback-service
+    - name: feedback_service
       connect_timeout: 0.25s
       type: logical_dns
       http2_protocol_options: {}
