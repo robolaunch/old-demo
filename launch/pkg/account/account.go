@@ -24,7 +24,7 @@ type User struct {
 
 func CreateUser(u *User) error {
 	ctx := context.Background()
-	token, err := kc.LoginAdmin(ctx, kUser, kPass, kCli)
+	token, err := kc.LoginAdmin(ctx, kUser, kPass, "master")
 	// To authenticate keycloak server
 	if err != nil {
 		fmt.Println("Something wrong with the credentials or url", err)

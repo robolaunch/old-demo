@@ -17,7 +17,6 @@ import (
 //TODO: Implement helm chart for it.
 func (*server) CreateLaunch(ctx context.Context, req *launchpb.LaunchCreateRequest) (*launchpb.LaunchResponse, error) {
 	// Username could be used for namespace in this version.
-
 	// User check service implemented user cannot access without login!
 	headers, _ := metadata.FromIncomingContext(ctx)
 	err := account.CurrentUser(headers["authorization"][0])

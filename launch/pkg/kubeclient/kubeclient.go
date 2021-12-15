@@ -13,12 +13,13 @@ import (
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/util/intstr"
 	"k8s.io/client-go/kubernetes"
-	"k8s.io/client-go/tools/clientcmd"
+	"k8s.io/client-go/rest"
 )
 
 //Create kubernetes connection.
 func GetKubeClient() (*kubernetes.Clientset, error) {
-	config, err := clientcmd.BuildConfigFromFlags("", "./config.yaml")
+	// config, err := clientcmd.BuildConfigFromFlags("", "./config.yaml")
+	config, err := rest.InClusterConfig()
 	if err != nil {
 		return nil, err
 	}
@@ -44,7 +45,7 @@ func CreateUserRole(u string) error {
 		Rules: []v1.PolicyRule{
 			{
 				APIGroups: []string{""},
-				Resources: []string{"pods,services"},
+				Resources: []string{"pods", "services"},
 				Verbs:     []string{"get", "list"},
 			},
 		},
