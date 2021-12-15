@@ -1,6 +1,5 @@
 import "../styles/globals.css";
 import type { AppProps } from "next/app";
-import cookie from "cookie";
 import { KeycloakConfig } from "keycloak-js";
 import getConfig from "next/config";
 import { SSRCookies, SSRKeycloakProvider } from "@react-keycloak/ssr";

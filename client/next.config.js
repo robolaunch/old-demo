@@ -2,8 +2,8 @@
 module.exports = {
   reactStrictMode: true,
   publicRuntimeConfig: {
-    launchSvc: "http://159.69.216.106:8080",
-    feedbackSvc: "http://159.69.216.106:8081",
+    launchSvc: "http://23.88.62.179:31384",
+    feedbackSvc: "http://23.88.62.179:31384",
     baseUrl: "http://localhost:3000",
     keycloak: {
       realm: "master",

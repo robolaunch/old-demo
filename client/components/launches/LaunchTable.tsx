@@ -101,8 +101,9 @@ const LaunchTable: React.FC = () => {
         <Tbody>
           {/* @ts-ignore */}
           {elements &&
-            elements.map((element) => (
+            elements.map((element, i) => (
               <TableItem
+                key={i}
                 name={element.getName()}
                 namespace={element.getNamespace()}
                 status={element.getWorkloadStatus()}
