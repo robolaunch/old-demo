@@ -37,11 +37,3 @@ RUN sudo rm /bin/sh && sudo ln -s /bin/bash /bin/sh && \
      
 #  noetic repoları yok
 
-#RUN echo "no"
-     
-#ENTRYPOINT . /opt/ros/$ROS_DISTRO/setup.sh && \
-#    ls && \
-#    . devel/setup.sh && \
-#    roslaunch ridgeback_gazebo ridgeback_world.launch
-
-

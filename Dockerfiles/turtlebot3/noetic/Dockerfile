@@ -12,6 +12,7 @@ RUN sudo rm /bin/sh && sudo ln -s /bin/bash /bin/sh && \
     cd /home/user/catkin_ws/src && \
     git clone https://github.com/ROBOTIS-GIT/turtlebot3_msgs.git && \
     git clone https://github.com/ROBOTIS-GIT/turtlebot3.git && \
+    git clone https://github.com/ROBOTIS-GIT/turtlebot3_simulations.git && \
     cd .. && \
     sudo apt update && \
     . /opt/ros/$ROS_DISTRO/setup.sh && \

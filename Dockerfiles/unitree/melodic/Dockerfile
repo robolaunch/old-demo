@@ -12,7 +12,8 @@ RUN sudo rm /bin/sh && sudo ln -s /bin/bash /bin/sh && \
     ros-$ROS_DISTRO-gazebo-ros-control  \
     ros-$ROS_DISTRO-joint-state-controller  \
     ros-$ROS_DISTRO-effort-controllers  \
-    ros-$ROS_DISTRO-joint-trajectory-controller && \
+    ros-$ROS_DISTRO-joint-trajectory-controller \
+    ros-$ROS_DISTRO-xacro && \
     sudo mkdir -p /home/user/catkin_ws/src && \
     sudo chown -R user:user /home/user/catkin_ws/ && \
     cd /home/user/catkin_ws/src && \
