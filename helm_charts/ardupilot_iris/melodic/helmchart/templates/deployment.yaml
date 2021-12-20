@@ -1,0 +1,163 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ .Values.robot }}-1
+  namespace: {{ .Values.namespace }}
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: {{ .Values.robot }}-1
+  template:
+    metadata:
+      labels:
+        app: {{ .Values.robot }}-1
+    spec:
+      hostname: {{ .Values.robot }}-1
+      containers:
+      - name: {{ .Values.robot }}-1-webviz
+        image: {{ .Values.images.webviz }}
+        env:
+        - name: WEBVIZ_PORT
+          value: {{ .Values.ports.webviz_port | quote }}
+        stdin: true
+        tty: true		  
+        ports:
+        - name: webviz
+          containerPort: {{ .Values.ports.webviz_port }}
+          hostport: {{ .Values.ports.webviz_port }}  
+          protocol: TCP
+        volumeMounts:
+      - name: {{ .Values.robot }}-1
+        image: {{ .Values.images.simulation }}
+        env:
+        - name: VIDEO_PORT
+          value: "DFP"
+        - name: USER
+          value: {{ .Values.user | quote }}
+        - name: NEKO_BIND
+          value: {{ .Values.ports.neko_bind | quote }}
+        - name: NEKO_UDP_PORT
+          value: {{ .Values.ports.neko_udp_port | quote }}
+        - name: THEIA_PORT
+          value: {{ .Values.ports.theia_port | quote }}
+        - name: ROSBRIDGE_PORT
+          value: {{ .Values.ports.rosbridge_port | quote }}
+        stdin: true
+        tty: true		  
+        ports:
+        - name: http
+          containerPort: {{ .Values.ports.http_port }}
+          hostport: {{ .Values.ports.http_port }}
+          protocol: TCP
+        - name: webrtc
+          containerPort: {{ .Values.ports.webrtc_port }}
+          hostport: {{ .Values.ports.webrtc_port }}  
+          protocol: UDP
+        - name: theia
+          containerPort: {{ .Values.ports.theia_port }}
+          hostport: {{ .Values.ports.theia_port }}  
+          protocol: TCP
+        - name: rosbridge
+          containerPort: {{ .Values.ports.rosbridge_port }}
+          hostport: {{ .Values.ports.rosbridge_port }}  
+          protocol: TCP
+        volumeMounts:
+        - mountPath: /dev/shm
+          name: dshm
+        - mountPath: /cache
+          name: xgl-cache-vol
+        - mountPath: /etc/bootstrap.sh
+          subPath: bootstrap.sh
+          name: robot-bootstrap
+        - mountPath: /etc/provedge/supervisord/theia_supervisord.conf
+          subPath: theia_supervisord.conf
+          name: robot-theia-supervisord
+        - mountPath: /etc/provedge/theia_start.sh
+          subPath: theia_start.sh
+          name: robot-theia-start
+        - mountPath: /etc/provedge/supervisord/{{ .Values.robot }}_supervisord.conf
+          subPath: {{ .Values.robot }}_supervisord.conf
+          name: {{ .Values.robot }}-supervisord
+        - mountPath: /etc/provedge/{{ .Values.robot }}_start.sh
+          subPath: {{ .Values.robot }}_start.sh
+          name: {{ .Values.robot }}-start
+        - mountPath: /var/www/js/app.08718670.js
+          subPath: app.08718670.js
+          name: robot-app-js
+        - mountPath: /var/www/index.html
+          subPath: index.html
+          name: robot-index
+      volumes:
+      - name: dshm
+        emptyDir:
+          medium: Memory
+      - name: xgl-cache-vol
+        emptyDir: {}
+      - name: robot-bootstrap
+        configMap:
+          name: robot-bootstrap
+          defaultMode: 0777
+      - name: robot-theia-start
+        configMap:
+          name: robot-theia-start
+          defaultMode: 0777
+      - name: robot-theia-supervisord
+        configMap:
+          name: robot-theia-supervisord
+          defaultMode: 0777
+      - name: {{ .Values.robot }}-start
+        configMap:
+          name: {{ .Values.robot }}-start
+          defaultMode: 0777
+      - name: {{ .Values.robot }}-supervisord
+        configMap:
+          name: {{ .Values.robot }}-supervisord
+          defaultMode: 0777
+      - name: robot-app-js
+        configMap:
+          name: robot-app-js
+          defaultMode: 0777
+      - name: robot-index
+        configMap:
+          name: robot-index
+          defaultMode: 0777
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ .Values.robot }}-1
+  namespace: {{ .Values.namespace }}
+spec:
+  type: NodePort
+  externalTrafficPolicy: Local
+  ports:
+  - port: {{ .Values.ports.http_port }}
+    targetPort: {{ .Values.ports.http_port }}
+    nodePort: {{ .Values.ports.http_port }}
+    protocol: TCP
+    name: http
+  - port: {{ .Values.ports.theia_port }}
+    targetPort: {{ .Values.ports.theia_port }} 
+    nodePort: {{ .Values.ports.theia_port }}
+    protocol: TCP
+    name: theia
+  - port: {{ .Values.ports.webviz_port }}
+    targetPort: {{ .Values.ports.webviz_port }}
+    nodePort: {{ .Values.ports.webviz_port }}
+    protocol: TCP
+    name: webviz
+  - port: {{ .Values.ports.rosbridge_port }}
+    targetPort: {{ .Values.ports.rosbridge_port }}
+    nodePort: {{ .Values.ports.rosbridge_port }}
+    protocol: TCP
+    name: rosbridge
+  - port: {{ .Values.ports.webrtc_port }}
+    targetPort: {{ .Values.ports.webrtc_port }}
+    nodePort: {{ .Values.ports.webrtc_port }}
+    protocol: UDP
+    name: webrtc
+  selector:
+    app: {{ .Values.robot }}-1	  
+  selector:
+    app: {{ .Values.robot }}-1	

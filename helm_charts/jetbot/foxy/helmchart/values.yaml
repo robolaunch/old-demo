@@ -1,0 +1,17 @@
+robot: jetbot
+ros_version: foxy
+user: user
+namespace: robot-test-1
+
+images:
+  simulation: jetbot_foxy
+  webviz: hgtunc/boardmarker:webvizv2
+
+ports:
+  http_port: 58001
+  theia_port: 58501
+  webviz_port: 58601
+  rosbridge_port: 58701
+  webrtc_port: 59001
+  neko_bind: 58001
+  neko_udp_port: 59001-59001
